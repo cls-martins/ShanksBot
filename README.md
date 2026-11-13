@@ -8,21 +8,25 @@
 
 ## 📋 Sumário
 
-1. [Sobre o Projeto](#sobre-este-projeto)
-2. [Instalação](#instalação-no-termux)
+1. [Explicação importante](#importante)
+2. [Sobre o Projeto](#sobre-este-projeto)
+3. [Instalação](#instalação-no-termux)
     - [No Termux](#instalação-no-termux)
     - [No Windows](#instalação-no-windows)
-3. [Diagrama de conexão](#diagrama-de-conexão)
 4. [Funcionalidades](#funcionalidades-gerais)
     - [Funcionalidades gerais](#funcionalidades-gerais)
 5. [Menu do bot](#onde-fica-o-menu-do-bot)
 6. [Mensagens de boas vindas](#onde-modifico-a-mensagem-de-boas-vindas-e-quando-alguém-sai-do-grupo)
-7. [Diagrama de como os comandos funcionam](#diagrama-de-como-os-comandos-funcionam)
-8. [Diagrama de como funcionam os middlewares](#diagrama-de-como-funcionam-os-middlewares-interceptadores-de-recepção-e-saída)
-9. [Custom Middleware - Personalize o bot sem modificar arquivos principais](#custom-middleware---personalize-o-bot-sem-modificar-arquivos-principais)
-10. [Estrutura de pastas](#estrutura-de-pastas)
-11. [Atualizar o bot](#atualizar-o-bot)
-12. [Erros comuns](#erros-comuns)
+7. [Custom Middleware - Personalize o bot sem modificar arquivos principais](#custom-middleware---personalize-o-bot-sem-modificar-arquivos-principais)
+8. [Estrutura de pastas](#estrutura-de-pastas)
+9. [Atualizar o bot](#atualizar-o-bot)
+10. [Erros comuns](#erros-comuns)
+11. [Finalização](#finalização)
+
+# Importante!
+## Leia o conteúdo abaixo antes de qualquer coisa.
+
+O código deste repositório está alterado para ser usado como ShanksBot. Utilize o https:github.com/guiireal/takeshi-bot como repositório de instalação de teste e repositório de auxílio, para depois aplicar a instalação através deste.
 
 ## Sobre este projeto
 
@@ -218,139 +222,6 @@ Depois, configure o arquivo `config.js` que está dentro da pasta `src`.
 npm start
 ```
 
-## Diagrama de conexão
-
-[![diagram](https://mermaid.ink/img/pako:eNqdVc1u1DAQfpWpJSSQtqX7k_2JoChse-hh26qtWlTtxZtMs4bEXhxnVVpV4gDcOLQUDgipQnBAiBs3OO6b8AR9BMbJZvu3BYQPVmx_M558M9_4gPkqQOayBJ-mKH1cFDzUPO5KoMFTo2Qa91Dn6wHXRvhiwKWBRRwCT-Ds9OjLr-evz06Pf8KW8kdfryMfKpMjP7-DTf4Ek76we9eB216OO_4G231uEm8w6MoctqIMghqitveWtj2XYO-fQ1vFCtTEq68k-oaDVBMHDwoPt27B_cmAtfXlztLyugdbSzsX9nOoJiegw97tSnW-BJWanRznTn54UzSv3sKaFjEKzWGI-6BVwGVgo-sV_2rH-ReZzi4sEBEuyEEMiSEmzk9pn04J40KXLYpQ2BtBjn7EqBUEmVd7NNWf45TLrWJMuzv3bgNfwwDBH30PREhu0eYDeYzSqHP0tjdbeF5Ho7TkE4vbuOdCuVKtzTr1RvPO1PjPTk-OoKMSoyd2F2ymhXeJXxe8Hlmep9Sm18cojbi-19N3F7ZGHwFj4sKzwUd9lVBdZIUQqKTLMkw7ElTfOWx8qKHAjzETloufi7OYA3Vz9iyDvz68hPbYggpwV-iYbC4EeYnIMY82hr3RJ5VJTIt9HvCZq-RlwA0eDYk2TWmSvuAi-TNfmY2N6OHqJrRXV5bam97i6kz2f16oiEeMEIZ8opWcQhtFzEmIWeoREowHGvMLUAY3aWj05tFyx9uwIlra-IOMxgrKtPQXGZ28gBVqAgM9-r4nYvoiLWHyv_rJueZaY3iJREgsrck0QYyrA65QMlUNWeqLUpv5x8ysra-ubI5TYlvjY1u-iaFZyUhIzA4QeJhynbcQCiDhIU0XEgJTByuxUIuAuUanWGLUK2Jul-zAWnSZ6WOMXWYbR4C7PI2M7SCHZEYNeEepuLDUKg37zN3lUUKrdBBwUzwNk11NgaBuq1Qa5pZbzUrmhbkHbI_WzfpcrdGq1eabTtNpVSrVEnvG3Mb8XKPpVKpVakx1p1FvHpbYfnZvea5RL9drjfK8UynXW80Sw0CQNjr5-5Q9U4e_ARz-Fnw?type=png)](https://mermaid.live/edit#pako:eNqdVc1u1DAQfpWpJSSQtqX7k_2JoChse-hh26qtWlTtxZtMs4bEXhxnVVpV4gDcOLQUDgipQnBAiBs3OO6b8AR9BMbJZvu3BYQPVmx_M558M9_4gPkqQOayBJ-mKH1cFDzUPO5KoMFTo2Qa91Dn6wHXRvhiwKWBRRwCT-Ds9OjLr-evz06Pf8KW8kdfryMfKpMjP7-DTf4Ek76we9eB216OO_4G231uEm8w6MoctqIMghqitveWtj2XYO-fQ1vFCtTEq68k-oaDVBMHDwoPt27B_cmAtfXlztLyugdbSzsX9nOoJiegw97tSnW-BJWanRznTn54UzSv3sKaFjEKzWGI-6BVwGVgo-sV_2rH-ReZzi4sEBEuyEEMiSEmzk9pn04J40KXLYpQ2BtBjn7EqBUEmVd7NNWf45TLrWJMuzv3bgNfwwDBH30PREhu0eYDeYzSqHP0tjdbeF5Ho7TkE4vbuOdCuVKtzTr1RvPO1PjPTk-OoKMSoyd2F2ymhXeJXxe8Hlmep9Sm18cojbi-19N3F7ZGHwFj4sKzwUd9lVBdZIUQqKTLMkw7ElTfOWx8qKHAjzETloufi7OYA3Vz9iyDvz68hPbYggpwV-iYbC4EeYnIMY82hr3RJ5VJTIt9HvCZq-RlwA0eDYk2TWmSvuAi-TNfmY2N6OHqJrRXV5bam97i6kz2f16oiEeMEIZ8opWcQhtFzEmIWeoREowHGvMLUAY3aWj05tFyx9uwIlra-IOMxgrKtPQXGZ28gBVqAgM9-r4nYvoiLWHyv_rJueZaY3iJREgsrck0QYyrA65QMlUNWeqLUpv5x8ysra-ubI5TYlvjY1u-iaFZyUhIzA4QeJhynbcQCiDhIU0XEgJTByuxUIuAuUanWGLUK2Jul-zAWnSZ6WOMXWYbR4C7PI2M7SCHZEYNeEepuLDUKg37zN3lUUKrdBBwUzwNk11NgaBuq1Qa5pZbzUrmhbkHbI_WzfpcrdGq1eabTtNpVSrVEnvG3Mb8XKPpVKpVakx1p1FvHpbYfnZvea5RL9drjfK8UynXW80Sw0CQNjr5-5Q9U4e_ARz-Fnw)
-
-## Alguns comandos necessitam de API
-
-Edite o arquivo `config.js` que está dentro da pasta `src` e cole sua api key da plataforma Spider X API, conforme o código abaixo.
-Para obter seu token, acesse: [https://api.spiderx.com.br](https://api.spiderx.com.br) e crie sua conta gratuitamente!
-
-```js
-export const SPIDER_API_TOKEN = "seu_token_aqui";
-```
-
-Para comandos de **canvas** e **gerar-link**, é necessário configurar a API do **Linker**:
-
-```js
-export const LINKER_BASE_URL = "https://linker.devgui.dev/api";
-export const LINKER_API_KEY = "seu_token_aqui";
-```
-
-Obtenha sua API Key em: [https://linker.devgui.dev](https://linker.devgui.dev)
-
-## Funcionalidades gerais
-
-| Função | Contexto | Requer a Spider X API? |
-| ------------ | --- | --- |
-| Alterar imagem do bot | Dono | ❌ |
-| Desligar o bot no grupo | Dono | ❌ |
-| Executar comandos de infra | Dono | ❌ |
-| Ligar o bot no grupo | Dono | ❌ |
-| Modificar o prefixo por grupo | Dono | ❌ |
-| Obter o ID do grupo | Dono | ❌ |
-| Abrir grupo | Admin | ❌ |
-| Advertir | Admin | ❌ |
-| Agendar mensagem | Admin | ❌ |
-| Anti audio | Admin | ❌ |
-| Anti documento | Admin | ❌ |
-| Anti evento | Admin | ❌ |
-| Anti ligação | Admin | ❌ |
-| Anti imagem | Admin | ❌ |
-| Anti link | Admin | ❌ |
-| Anti lottie sticker | Admin | ❌ |
-| Anti pagamento | Admin | ❌ |
-| Anti produto | Admin | ❌ |
-| Anti status grupo | Admin | ❌ |
-| Anti sticker | Admin | ❌ |
-| Anti video | Admin | ❌ |
-| Banir membros | Admin | ❌ |
-| Bloquear número no WhatsApp | Admin | ❌ |
-| Excluir mensagens | Admin | ❌ |
-| Fechar grupo | Admin | ❌ |
-| Gestão de mensagens do auto-responder | Admin | ❌ |
-| Ligar/desligar auto responder | Admin | ❌ |
-| Ligar/desligar boas vindas | Admin | ❌ |
-| Ligar/desligar saída de grupo | Admin | ❌ |
-| Limpar chat | Admin | ❌ |
-| Marcar ausência (AFK) | Admin | ❌ |
-| Marcar todos | Admin | ❌ |
-| Mudar nome do grupo | Admin | ❌ |
-| Mute/unmute | Admin | ❌ |
-| Obter o link do grupo | Admin | ❌ |
-| Reativar advertência | Admin | ❌ |
-| Remover advertência | Admin | ❌ |
-| Revelar | Admin | ❌ |
-| Somente admins | Admin | ❌ |
-| Ver saldo da Spider X API | Admin | ❌ |
-| Borrar imagem | Membro | ❌ |
-| Brat (imagem com texto) | Membro | ✅ |
-| Bratvid (Figurinha animada no estilo brat) | Membro | ✅ |
-| Busca CEP | Membro | ❌ |
-| Canvas Bolsonaro | Membro | ✅ |
-| Canvas cadeia | Membro | ✅ |
-| Canvas inverter | Membro | ✅ |
-| Canvas RIP | Membro | ✅ |
-| Comandos de diversão/brincadeiras | Membro |❌ |
-| Deepseek V4 Flash | Membro | ✅ |
-| Envio de botões | Membro | ✅ |
-| Envio de listas | Membro | ✅ |
-| Espelhar imagem | Membro | ❌ |
-| Facebook download | Membro | ✅ |
-| Fake chat | Membro | ❌ |
-| Figurinha animada para GIF | Membro | ✅ |
-| Figurinha de texto animada | Membro | ✅ |
-| Geração de imagens com IA | Membro | ✅ |
-| Gerar link | Membro | ❌ |
-| Google Gemini | Membro | ✅ |
-| Google search | Membro | ✅ |
-| GPT-5 Mini | Membro | ✅ |
-| Imagem com contraste | Membro | ❌ |
-| Imagem IA Flux | Membro | ✅ |
-| Imagem pixelada | Membro | ❌ |
-| Imagem preto/branco | Membro | ❌ |
-| Informações de um comando | Membro | ❌ |
-| Instagram download | Membro | ✅ |
-| Ping | Membro | ❌ |
-| Pinterest download (carrossel) | Membro | ✅ |
-| Play áudio | Membro | ✅ |
-| Play vídeo | Membro | ✅ |
-| Renomear figurinha | Membro | ❌ |
-| Remover fundo de imagem | Membro | ✅ |
-| Sticker | Membro | ❌ |
-| Sticker IA  | Membro | ✅ |
-| Sticker para imagem | Membro | ❌ |
-| TikTok audio download | Membro | ✅ |
-| TikTok video download | Membro | ✅ |
-| Transcrever áudio | Membro | ✅ |
-| TTS (texto para áudio) | Membro | ✅ |
-| X/Twitter download | Membro | ✅ |
-| YT MP3 | Membro | ✅ |
-| YT MP4 | Membro | ✅ |
-| YT search | Membro | ✅ |
-
-## Auto responder
-
-O Takeshi Bot possui um auto-responder embutido, edite o arquivo em `./database/auto-responder.json`:
-
-```json
-[
-    {
-        "match": "Oi",
-        "answer": "Olá, tudo bem?"
-    },
-    {
-        "match": "Tudo bem",
-        "answer": "Estou bem, obrigado por perguntar"
-    },
-    {
-        "match": "Qual seu nome",
-        "answer": "Meu nome é Takeshi Bot"
-    }
-]
-```
-
 ## Onde fica o menu do bot?
 
 O menu do bot fica dentro da pasta `src` no arquivo chamado `menu.js`
@@ -358,14 +229,6 @@ O menu do bot fica dentro da pasta `src` no arquivo chamado `menu.js`
 ## Onde modifico a mensagem de boas vindas e quando alguém sai do grupo?
 
 As mensagens ficam dentro da pasta `src` no arquivo chamado `messages.js`
-
-## Diagrama de como os comandos funcionam
-
-[![diagram](https://mermaid.ink/img/pako:eNqNVltrG0cU_isnCwGJqJJ2tZKtpTE4GwUMteVYlinFL6Pd0Xpb7Y48F9eJMeRCX_pSSqEPJRDSBAp9K6HQ9_0n_gPtT-iZ2YscW7KiBzGz831nznduuxdWwEJqeZagp4qmAX0ck4iT5DgF_BElWaqSCeX5fk64jIN4TlIJY0E5EAH_vf35A25U9o7H7DbsEZM56sOvcEi-o-Ik1s9uA_0kzIG_vIJtfqriMwYhA58lJA3RcM7YY5ICO8Or9f0NJHlI-e0FPB1v7z0ewtHQz36EXVxvw3gX_KFeDkv2_fvwsPrBeDTOXh7sDGGwd7Szfe0kB3MaSODRpOZ02g1wXP3X7dbzwyW-oCoP7H__-enq9fsqIEDTs5hAUKoouZrxxdaW4bQSmqplZs2pDiC6QicUCCBSkIgW6aFpuFzZo-Eh7B8M_cFodJeuQpIRV1_pgFNI0o7gw3gaBwQozDkLFCfAbotbrJBTqjwqqQKNQ8TVHIMjZPYOiMRcfwZnzuk0Pi9ZAeOcSga1Vn0pd_-mf3BsmUBbyxy9GXQltMjE-3LCW1tYky9B8KCFlrQp0WLfp5S3VhySMInTVYcJ1e3UWhOsqzc_wCANWCo5Ux4UJO1-81uxNlRnLMj-BEkTmFOexEJk79lniN6vwDAhgpKQQEqwR4UkeRyuXvwOuXJ4CCL7iP2ZmiadMFkBcvUIMAuhj02yK0AhBhGnisxw6nBQ6wq66GMYfD3wx4d31bQp564u7M7Kms7HRqeo68E5DZTUhUIWY2dtTRsT_glJTFN-mpZl1xr8sLqi4JSdLVWo6xvzzRahFhiOAzqfPYOamSIc0WLOMB31TzA7CY6EChPrXbJAEB4JqOG_wjslE9fULUAUEhIL6LYfwFSl2R_Z31Tk_hBxb5kwlFMG4avsY6QLb2HXqPNWRsFugk-weSNSOAsFxbjjNGFX34v5kPRcGqOlYWEQnSb2hp6qBftBDlztpqnuKlJPOEuexDNay-mNnF1fU4EHg9H-cHS49jVh6u-O0tOD3wP32kw1SU1DerPCciROkL8KuXmQVr1_8qFxZFq_el-UBXOvUmc1rIjHoeVJrmgDJyLHzOPWutCQY0ue0IQeWx4uQzolaib1wLxEGr6lv2EsKZk4mKITy5uSmcCdmodElh8P1VOOF1LuM5VKy3PaTs9YsbwL6xz3bq_Z6fW7tuM6G92O7XQb1jPLs-1e0-72-z27t9F3Hdu-bFjPzb120-1vbvZdt9tpu5sbbbRGw1gyvpt_wpgvmcv_AYwQ1RY?type=png)](https://mermaid.live/edit#pako:eNqNVltrG0cU_isnCwGJqJJ2tZKtpTE4GwUMteVYlinFL6Pd0Xpb7Y48F9eJMeRCX_pSSqEPJRDSBAp9K6HQ9_0n_gPtT-iZ2YscW7KiBzGz831nznduuxdWwEJqeZagp4qmAX0ck4iT5DgF_BElWaqSCeX5fk64jIN4TlIJY0E5EAH_vf35A25U9o7H7DbsEZM56sOvcEi-o-Ik1s9uA_0kzIG_vIJtfqriMwYhA58lJA3RcM7YY5ICO8Or9f0NJHlI-e0FPB1v7z0ewtHQz36EXVxvw3gX_KFeDkv2_fvwsPrBeDTOXh7sDGGwd7Szfe0kB3MaSODRpOZ02g1wXP3X7dbzwyW-oCoP7H__-enq9fsqIEDTs5hAUKoouZrxxdaW4bQSmqplZs2pDiC6QicUCCBSkIgW6aFpuFzZo-Eh7B8M_cFodJeuQpIRV1_pgFNI0o7gw3gaBwQozDkLFCfAbotbrJBTqjwqqQKNQ8TVHIMjZPYOiMRcfwZnzuk0Pi9ZAeOcSga1Vn0pd_-mf3BsmUBbyxy9GXQltMjE-3LCW1tYky9B8KCFlrQp0WLfp5S3VhySMInTVYcJ1e3UWhOsqzc_wCANWCo5Ux4UJO1-81uxNlRnLMj-BEkTmFOexEJk79lniN6vwDAhgpKQQEqwR4UkeRyuXvwOuXJ4CCL7iP2ZmiadMFkBcvUIMAuhj02yK0AhBhGnisxw6nBQ6wq66GMYfD3wx4d31bQp564u7M7Kms7HRqeo68E5DZTUhUIWY2dtTRsT_glJTFN-mpZl1xr8sLqi4JSdLVWo6xvzzRahFhiOAzqfPYOamSIc0WLOMB31TzA7CY6EChPrXbJAEB4JqOG_wjslE9fULUAUEhIL6LYfwFSl2R_Z31Tk_hBxb5kwlFMG4avsY6QLb2HXqPNWRsFugk-weSNSOAsFxbjjNGFX34v5kPRcGqOlYWEQnSb2hp6qBftBDlztpqnuKlJPOEuexDNay-mNnF1fU4EHg9H-cHS49jVh6u-O0tOD3wP32kw1SU1DerPCciROkL8KuXmQVr1_8qFxZFq_el-UBXOvUmc1rIjHoeVJrmgDJyLHzOPWutCQY0ue0IQeWx4uQzolaib1wLxEGr6lv2EsKZk4mKITy5uSmcCdmodElh8P1VOOF1LuM5VKy3PaTs9YsbwL6xz3bq_Z6fW7tuM6G92O7XQb1jPLs-1e0-72-z27t9F3Hdu-bFjPzb120-1vbvZdt9tpu5sbbbRGw1gyvpt_wpgvmcv_AYwQ1RY)
-
-## Diagrama de como funcionam os middlewares (interceptadores) de recepção e saída
-
-[![diagram](https://mermaid.ink/img/pako:eNqtld9qE0EUxl_lOFBoIW2TzV8WrU2tFKVJa9uAltycZE_TwexMnJ2NtaXghQqiIPXCC1FELIgXeq3XeZO-gD6Cs7NJtmmTBsG9CDsz5zvn7De_yRyxpvSIuSygRyGJJq1ybCn06wLMg6GWIvQbpOJxB5XmTd5BoaHs-VwABvDn08mPeHQ5aEXqOOT0HezgQwr2eTR3ObAWkOonO4Wq7EqokN9Qst5PWpWaQHZNkK2UiuJdE_3-KdyrlaurG1BeX6v1XlbgdnVnqwwbNdgu3wEzv7ZV29wYpJmZgRvD54IkWYhjFTU1qFZj1smmU-Dkop98fi5enNzT2YfnUG63wt43H0hohSAktFTYkYkyebPK-aUlY4prBsYOKRCW78reFwl4SWjCBsGrpE2DCGbbAM_Vk-G4OueEKxKD-S4XnrGbAt37DKh5Fz28eb2hFpdmm9JH4UkXFh9T2wzMN4q5cTmxrUeS9dMkARcKb1ILwScRYIt88AgaiXhUlDhrhdthI9Bch9y1HR4J09QxnL14C9aneNI6Fc9Wo6a9S-Yl7QzoOXkFdbZCvm1CwqjrcP_B7rU6m9RZstsWV9_iGkFDDRp-ZSKmdkAjbnkUjDXswrefPfv1--cbqEad7eEhiBEBCS8e2JerGI9Ow2TC-3BbzKcT_vH1kPAA-RinJ_C9Rb5JBssVVBzHyKbQbWpNY7tyjq4Ae989nII4HXB9Fd9jEv4z5manO-TxKRs9GXJr179Dbq0fUh57Hlk4FEWAT-a7L48AX7PRfbSF1HyPN7H31SB5ge8xbv1fzCdu_Dr3O6YYejI6WecsmzVtUdtigF2zL6E2mVNAujk3PDnAUqyluMdcrUJKMZ-Uj9GQHUUxdab3yac6c82rR3sYtnXk27GRmctrV0p_oDT_vq195u6hcSPFwo6HenCjDmeVqUjqlgyFZq6TLuVsFuYesQPmZorFhYKTzWSK6Wwpn8s4ZvUJc-cLhYVizsmWSvlC2kk72exxih3awpmFfM4pFLJ5s54pFfMpZljTUlXie91e78d_AUVrgqU?type=png)](https://mermaid.live/edit#pako:eNqtld9qE0EUxl_lOFBoIW2TzV8WrU2tFKVJa9uAltycZE_TwexMnJ2NtaXghQqiIPXCC1FELIgXeq3XeZO-gD6Cs7NJtmmTBsG9CDsz5zvn7De_yRyxpvSIuSygRyGJJq1ybCn06wLMg6GWIvQbpOJxB5XmTd5BoaHs-VwABvDn08mPeHQ5aEXqOOT0HezgQwr2eTR3ObAWkOonO4Wq7EqokN9Qst5PWpWaQHZNkK2UiuJdE_3-KdyrlaurG1BeX6v1XlbgdnVnqwwbNdgu3wEzv7ZV29wYpJmZgRvD54IkWYhjFTU1qFZj1smmU-Dkop98fi5enNzT2YfnUG63wt43H0hohSAktFTYkYkyebPK-aUlY4prBsYOKRCW78reFwl4SWjCBsGrpE2DCGbbAM_Vk-G4OueEKxKD-S4XnrGbAt37DKh5Fz28eb2hFpdmm9JH4UkXFh9T2wzMN4q5cTmxrUeS9dMkARcKb1ILwScRYIt88AgaiXhUlDhrhdthI9Bch9y1HR4J09QxnL14C9aneNI6Fc9Wo6a9S-Yl7QzoOXkFdbZCvm1CwqjrcP_B7rU6m9RZstsWV9_iGkFDDRp-ZSKmdkAjbnkUjDXswrefPfv1--cbqEad7eEhiBEBCS8e2JerGI9Ow2TC-3BbzKcT_vH1kPAA-RinJ_C9Rb5JBssVVBzHyKbQbWpNY7tyjq4Ae989nII4HXB9Fd9jEv4z5manO-TxKRs9GXJr179Dbq0fUh57Hlk4FEWAT-a7L48AX7PRfbSF1HyPN7H31SB5ge8xbv1fzCdu_Dr3O6YYejI6WecsmzVtUdtigF2zL6E2mVNAujk3PDnAUqyluMdcrUJKMZ-Uj9GQHUUxdab3yac6c82rR3sYtnXk27GRmctrV0p_oDT_vq195u6hcSPFwo6HenCjDmeVqUjqlgyFZq6TLuVsFuYesQPmZorFhYKTzWSK6Wwpn8s4ZvUJc-cLhYVizsmWSvlC2kk72exxih3awpmFfM4pFLJ5s54pFfMpZljTUlXie91e78d_AUVrgqU)
 
 ## Custom Middleware - Personalize o bot sem modificar arquivos principais
 
@@ -498,10 +361,6 @@ export async function customMiddleware({ type, commonFunctions }) {
 
 Execute `bash update.sh`
 
-## Testes
-
-Execute `npm run test:all`
-
 ## Erros comuns
 
 ### 📁 Operação negada ao extrair a pasta
@@ -555,37 +414,11 @@ Geralmente as pessoas que cometem esse erro, ficam com dois bots:
 
 Você deve apagar um dos bots e tanto configurar quanto executar **apenas um**
 
-## Inscreva-se no canal
-
-[![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@devgui_?sub_confirmation=1)
-
-## Contribuindo com o projeto
-
-Embora o Takeshi seja open-source, as contribuições externas foram encerradas.
-
-Com o avanço das IAs, o desafio de programar tem sido substituído pela criação de prompts. Valorizo a autoria e a identidade do projeto. Não faz sentido entrar em um ciclo de revisar códigos gerados por IA que descaracterizam a lógica que construímos ao longo do tempo, por mais que sejam bons códigos, o fator humano e a criatividade se perdem.
-Qualquer um pode criar código com IA, não há mais valor genuíno em contribuir com código, o que torna o processo de revisão e manutenção insustentável.
-
-O projeto segue ativo, mas agora como um esforço individual. 
-Sinta-se à vontade para estudar o código ou fazer um fork para uso pessoal.
-
-Usar IA não é ruim, longe disso, mas em projetos open-source, a identidade, a autoria e o esforço genuíno para trazer soluções são mais importantes.
-
-## Licença
-
-[GPL-3.0](https://github.com/guiireal/takeshi-bot/blob/main/LICENSE)
-
-Este projeto está licenciado sob a Licença Pública Geral GNU (GPL-3.0).
-Isso significa que:
-
-- Você pode usar este código como quiser, seja para projetos pessoais ou comerciais.
-- Você pode modificar o código para adaptá-lo às suas necessidades.
-- Você pode compartilhar ou vender o código, mesmo modificado, mas precisa:
-  - Manter os créditos ao autor original (Guilherme França - Dev Gui).
-  - Tornar o código modificado disponível sob a mesma licença GPL-3.0.
-
 O que você não pode fazer:
 
 - Não pode transformar este código em algo proprietário (fechado) e impedir outras pessoas de acessá-lo ou usá-lo.
 
 Esta licença garante que todos tenham acesso ao código-fonte e podem colaborar livremente, promovendo o compartilhamento e o aprimoramento do projeto.
+
+## Finalização
+Esse código pertence de primeira mão ao repo: https://github.com/guiireal/takeshi-bot 
