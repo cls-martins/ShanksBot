@@ -1,72 +1,28 @@
-# 🤖 Takeshi Bot
+# ShanksBot
 
-![Takeshi Bot](./assets/images/takeshi-bot.png)
-
-[![Version](https://img.shields.io/badge/Vers%C3%A3o-8.11.0-blue)](https://github.com/guiireal/takeshi-bot)
-[![Tests](https://github.com/guiireal/takeshi-bot-private/actions/workflows/test.yml/badge.svg)](https://github.com/guiireal/takeshi-bot-private/actions/workflows/test.yml)
-
-> Base para bots de WhatsApp multifuncional com diversos comandos prontos.
-
-[![Node.js](https://img.shields.io/badge/Node.js-24-green?logo=node.js)](https://nodejs.org/en)
-[![Baileys](https://img.shields.io/badge/Baileys-7.0.0.rc14-purple?logo=whatsapp)](https://github.com/WhiskeySockets/Baileys)
-[![FFMPEG](https://img.shields.io/badge/FFMPEG-Latest-orange?logo=ffmpeg)](https://ffmpeg.org/)
-[![Spider X API](https://img.shields.io/badge/Spider_X-API-green?logo=api)](https://api.spiderx.com.br)
-
-## 🧪 Testando a versão 9.0.0-beta (migração para Zapo)
-
-Estamos migrando a base do Baileys para o [Zapo](https://zapo.to/). Se quiser testar a versão beta antes do lançamento oficial, clone a branch `9-beta`:
-
-```sh
-git clone -b 9-beta https://github.com/guiireal/takeshi-bot.git
-```
-
-Use por sua conta e risco, pode conter instabilidades.
+![ShanksBot - Flk takeshi-bot](./assets/images/takeshi-bot.png)
 
 ## Desenvolvida do zero, no vídeo
 
 [CRIANDO UM BOT DE WHATSAPP DO ZERO (GUIA DEFINITIVO) - BASE COMPLETA + 6 COMANDOS - JAVASCRIPT](https://youtu.be/6zr2NYIYIyc)
 
-![Logger](./assets/images/logger.png)
-
 ## 📋 Sumário
 
-1. [Idiomas Disponíveis](#-acesse-o-takeshi-bot-em-outros-idiomas)
-2. [Atenção](#-atenção)
-3. [Sobre o Projeto](#sobre-este-projeto)
-4. [Instalação](#instalação-no-termux)
+1. [Sobre o Projeto](#sobre-este-projeto)
+2. [Instalação](#instalação-no-termux)
     - [No Termux](#instalação-no-termux)
-    - [Nas principais hosts do Brasil](#instalação-nas-principais-hosts-do-brasil)
     - [No Windows](#instalação-no-windows)
-    - [Em VPS (Debian/Ubuntu)](#instalação-em-vps-debianubuntu)
-5. [Diagrama de conexão](#diagrama-de-conexão)
-6. [Alguns comandos necessitam de API](#alguns-comandos-necessitam-de-api)
-7. [Funcionalidades](#funcionalidades-gerais)
+3. [Diagrama de conexão](#diagrama-de-conexão)
+4. [Funcionalidades](#funcionalidades-gerais)
     - [Funcionalidades gerais](#funcionalidades-gerais)
-8. [Auto responder](#auto-responder)
-9. [Menu do bot](#onde-fica-o-menu-do-bot)
-10. [Mensagens de boas vindas](#onde-modifico-a-mensagem-de-boas-vindas-e-quando-alguém-sai-do-grupo)
-11. [Diagrama de como os comandos funcionam](#diagrama-de-como-os-comandos-funcionam)
-12. [Diagrama de como funcionam os middlewares](#diagrama-de-como-funcionam-os-middlewares-interceptadores-de-recepção-e-saída)
-13. [Custom Middleware - Personalize o bot sem modificar arquivos principais](#custom-middleware---personalize-o-bot-sem-modificar-arquivos-principais)
-14. [Estrutura de pastas](#estrutura-de-pastas)
-15. [Atualizar o bot](#atualizar-o-bot)
-16. [Testes](#testes)
-17. [Erros comuns](#erros-comuns)
-18. [Inscreva-se no canal](#inscreva-se-no-canal)
-19. [Contribuindo com o projeto](#contribuindo-com-o-projeto)
-20. [Licença e Disclaimer](#licença)
-
-## 🌐 Acesse o Takeshi Bot em outros idiomas
-
-- 🇪🇸 [**Versión en Español**](https://github.com/guiireal/takeshi-bot-espanol)
-
-## ⚠ Atenção
-
-Nós não prestamos suporte gratuíto caso você tenha adquirido esta base com terceiros e tenha pago por isso.
-Este bot sempre foi e sempre será **gratuíto**.
-Caso você tenha pago para utilizar este bot, do jeito que ele está hoje, saiba que você **foi enganado**.
-Nós não temos vínculo nenhum com terceiros e não nos responsabilizamos por isso, também não prestamos suporte nessas condições.
-Os únicos recursos pagos deste bot são pertencentes à [https://api.spiderx.com.br](https://api.spiderx.com.br), nossa API oficial.
+5. [Menu do bot](#onde-fica-o-menu-do-bot)
+6. [Mensagens de boas vindas](#onde-modifico-a-mensagem-de-boas-vindas-e-quando-alguém-sai-do-grupo)
+7. [Diagrama de como os comandos funcionam](#diagrama-de-como-os-comandos-funcionam)
+8. [Diagrama de como funcionam os middlewares](#diagrama-de-como-funcionam-os-middlewares-interceptadores-de-recepção-e-saída)
+9. [Custom Middleware - Personalize o bot sem modificar arquivos principais](#custom-middleware---personalize-o-bot-sem-modificar-arquivos-principais)
+10. [Estrutura de pastas](#estrutura-de-pastas)
+11. [Atualizar o bot](#atualizar-o-bot)
+12. [Erros comuns](#erros-comuns)
 
 ## Sobre este projeto
 
@@ -176,27 +132,6 @@ export const OWNER_LID = "12345678901234567890@lid";
 npm start
 ```
 
-## Instalação nas principais hosts do Brasil
-
-As principais hosts já oferecem o Takeshi como **bot padrão**, não sendo necessário nenhuma instalação manual!
-
-**Hosts suportadas**:
-
-| Bronxys | NexFuture | Speed Cloud |
-|---------|-----------|-------------|
-| [Grupo oficial](https://chat.whatsapp.com/HWeFfnUNR2mBGEw3F9GF5G) | [Grupo oficial](https://chat.whatsapp.com/Fl5FzZQC00J5CZp07AZVwQ?mode=r_c) | [Grupo oficial](https://chat.whatsapp.com/HsZDn6DJrx34z5lbNbNB2M) |
-| [![Bronxys](./assets/images/bronxys.png)](https://bronxyshost.com/) | [![NexFuture](./assets/images/nexfuture.png)](https://nexfuture.com.br/) | [![Speed Cloud](./assets/images/speed-cloud.png)](https://speedhosting.cloud/) |
-
-| TED Host | Cebolinha Host | Lumina Cloud |
-|----------|----------------|--------------|
-| [Grupo oficial](https://chat.whatsapp.com/I4EpMkbeaxCI4z4gQ3Pdif) | [Grupo oficial](https://chat.whatsapp.com/CCf2Pw9guan12orwGg0TqC?mode=gi_t) | [Grupo oficial](https://chat.whatsapp.com/DRfvf9SfekaAAFCIR8lGbj) |
-| [![TED Host](./assets/images/ted-host.png)](https://loja.tedhost.com.br/) | [![Cebolinha Host](./assets/images/cebolinha-host.jpeg)]( https://dash.cebolinhahost.com) | [![Lumina Cloud](./assets/images/lumina-logo.png)](https://loja.luminacloud.space/) |
-
-| Raikken Host | LordeHost | Jexa for Developers |
-|--------------|-----------|---------------------|
-| [Grupo oficial](https://chat.whatsapp.com/BzSDYUHbjHGF6gQmJfh2C7?mode=gi_t) | [Grupo oficial](https://chat.whatsapp.com/ENkfT9rjBnG2sCJRp48hhb) | [Grupo oficial](https://chat.whatsapp.com/EDWFGZVri3gEaW2HJxK4YV) |
-| [![Raikken](./assets/images/raikken-host.png)](https://painel.raikken.com.br) | [![LordeHost](./assets/images/lordehost.jpeg)](https://lordehost.com.br) | [![Jexa for Developers](./assets/images/jexa-for-developers.png)](https://devs.jexa.lat/) |
-
 ## Instalação no Windows
 
 1 - Abra o PowerShell como administrador.
@@ -282,164 +217,6 @@ Depois, configure o arquivo `config.js` que está dentro da pasta `src`.
 ```sh
 npm start
 ```
-
-## Instalação em VPS (Debian/Ubuntu)
-
-1 - Abra um novo terminal e execute os seguintes comandos.
-
-```sh
-sudo apt update && sudo apt upgrade && sudo apt-get update && sudo apt-get upgrade && sudo apt install ffmpeg
-```
-
-2 - Instale o `curl` se não tiver.
-
-```sh
-sudo apt install curl
-```
-
-3 - Instale o `git` se não tiver.
-
-```sh
-sudo apt install git
-```
-
-4 - Instale o NVM.
-
-```sh
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
-```
-
-5 - Atualize o source do seu ambiente
-
-```sh
-source ~/.bashrc
-```
-
-6 - Instale a versão 24 mais recente do node.js.
-
-```sh
-nvm install 24
-```
-
-7 - Verifique se a versão foi instalada e está ativa.
-
-```sh
-node -v # Deve exibir a versão 24
-```
-
-8 - Verifique se o npm foi instalado junto.
-
-```sh
-npm -v # Deverá exibir a versão do npm
-```
-
-9 - Instale o PM2 (recomendado).
-
-```sh
-npm install pm2 -g
-```
-
-10 - Clone o repositório do bot onde você desejar.
-
-```sh
-git clone https://github.com/guiireal/takeshi-bot.git
-```
-
-11 - Entre na pasta clonada.
-
-```sh
-cd takeshi-bot
-```
-
-12 - Instale as dependências do projeto.
-
-```sh
-npm install
-```
-
-13 - Digite o seguinte comando.
-
-```sh
-npm start
-```
-
-14 - O bot vai solicitar que você digite seu número de telefone.
-Digite **exatamente** como está no WhatsApp e apenas números.
-
-Não adicione o 9º dígito em números que não sejam de SP ou RJ.
-
-![tutorial-vps-1](./assets/images/tutorial-vps-1.png)
-
-15 - Conecte o bot no PM2
-
-```sh
-pm2 start npm --name "takeshi-bot" -- start
-```
-
-16 - O bot exibirá um **código de pareamento** que deve ser colocado em `dispositivos conectados` no seu WhatsApp.
-
-![tutorial-vps-2](./assets/images/tutorial-vps-2.png)
-
-17 - Vá em `dispositivos conectados` no seu WhatsApp.
-
-![tutorial-vps-3](./assets/images/tutorial-vps-3.png)
-
-18 - Clique em `conectar dispositivo`
-
-![tutorial-vps-4](./assets/images/tutorial-vps-4.png)
-
-19 - No canto inferior, clique em `Conectar com número de telefone`
-
-![tutorial-vps-5](./assets/images/tutorial-vps-5.png)
-
-20 - Coloque o **código de pareamento** que você recebeu no terminal, que foi feito no passo `16`.
-
-![tutorial-vps-6](./assets/images/tutorial-vps-6.png)
-
-21 - Após isso, no terminal que ficou parado, ele deve exibir que **foi conectado com sucesso**
-
-![tutorial-vps-7](./assets/images/tutorial-vps-7.png)
-
-22 - Digite `CTRL + C` para parar o bot.
-
-23 - Agora inicie ele pelo `PM2`, executando o seguinte código abaixo.
-
-```sh
-pm2 start npm --name "takeshi-bot" -- start
-```
-
-![tutorial-vps-8](./assets/images/tutorial-vps-8.png)
-
-24 - Aguarde 10 segundos, depois digite `CTRL + C` para parar o bot.
-
-Depois, Configure o arquivo `config.js` que está dentro da pasta `src`.
-
-```js
-// Prefixo padrão dos comandos.
-export const PREFIX = "/";
-
-// Emoji do bot (mude se preferir).
-export const BOT_EMOJI = "🤖";
-
-// Nome do bot (mude se preferir).
-export const BOT_NAME = "Takeshi Bot";
-
-// LID do bot (no caso, o que você rodará o bot).
-// Para obter o LID do bot, use o comando <prefixo>lid respondendo em cima de uma mensagem do número do bot
-// Troque o <prefixo> pelo prefixo do bot (ex: /lid).
-export const BOT_LID = "12345678901234567890@lid";
-
-// LID do dono do bot (no caso, o seu!).
-// Para obter o LID do dono do bot, use o comando <prefixo>meu-lid
-// Troque o <prefixo> pelo prefixo do bot (ex: /meu-lid).
-export const OWNER_LID = "12345678901234567890@lid";
-```
-
-Lembre-se de trocar os números acima pelos seus números, obviamente e tbm ver se o seu prefixo é a barra /.
-
-25 - Por fim, teste o bot!
-
-![tutorial-vps-9](./assets/images/tutorial-vps-9.png)
 
 ## Diagrama de conexão
 
