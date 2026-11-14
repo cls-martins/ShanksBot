@@ -1,3 +1,7 @@
+/*
+Menu de admin, altere a mensagem aqui.
+*/
+
 import pkg from "../package.json" with { type: "json" };
 import { BOT_NAME } from "./config.js";
 import { getPrefix } from "./utils/database.js";
