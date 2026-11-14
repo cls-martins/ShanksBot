@@ -1,7 +1,6 @@
 /**
  * Serviços para processar figurinhas (stickers) no ffmpeg.
  *
- * @author MRX
  */
 import { exec } from "child_process";
 import webp from "node-webpmux";
@@ -58,7 +57,8 @@ export async function processStaticSticker(inputPath, metadata) {
   return new Promise((resolve, reject) => {
     const tempOutputPath = path.resolve(TEMP_DIR, getRandomName("webp"));
 
-    const cmd = `ffmpeg -i "${inputPath}" -vf "scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2" -f webp -quality 90 "${tempOutputPath}"`;
+    // CORRIGIDO: Removido o padding e aspect ratio para esticar sem bordas
+    const cmd = `ffmpeg -i "${inputPath}" -vf "scale=512:512" -f webp -quality 90 "${tempOutputPath}"`;
 
     exec(cmd, async (error, _, stderr) => {
       try {
@@ -163,8 +163,8 @@ export async function createSticker(paramsHandler) {
   } = paramsHandler;
 
   const metadata = {
-    username: getUserName(webMessage, userLid),
-    botName: `${BOT_EMOJI} ${BOT_NAME}`,
+    username: "Sticker feito em Shanks Bot",
+    botName: "Acesse nosso grupo! https://newgen-shitpost.vercel.app",
   };
 
   const outputTempPath = path.resolve(TEMP_DIR, getRandomName("webp"));
@@ -184,7 +184,7 @@ export async function createSticker(paramsHandler) {
 
           if (attempt === 3) {
             throw new Error(
-              `Falha ao baixar imagem após 3 tentativas: ${downloadError.message}`,
+              `Falha ao enviar figurinha. Caso tenha sido visualização única, o bot não tem mais capacidade de ler visualização única`,
             );
           }
 
@@ -193,7 +193,8 @@ export async function createSticker(paramsHandler) {
       }
 
       await new Promise((resolve, reject) => {
-        const cmd = `ffmpeg -i "${inputPath}" -vf "scale=512:512:force_original_aspect_ratio=decrease" -f webp -quality 90 "${outputTempPath}"`;
+        // CORRIGIDO: Força escala exata 512x512 esticando a foto e sem adicionar bordas
+        const cmd = `ffmpeg -i "${inputPath}" -vf "scale=512:512" -f webp -quality 90 "${outputTempPath}"`;
 
         exec(cmd, (error, _, stderr) => {
           if (error) {
@@ -217,7 +218,7 @@ export async function createSticker(paramsHandler) {
 
           if (attempt === 3) {
             throw new Error(
-              `Falha ao baixar vídeo após 3 tentativas. Problema de conexão com WhatsApp.`,
+              `Falha ao enviar figurinha. Caso tenha sido visualização única, o bot não tem mais capacidade de ler visualização única`,
             );
           }
 
@@ -280,7 +281,7 @@ export async function createSticker(paramsHandler) {
 
         if (attempt === 3) {
           throw new Error(
-            `Falha ao enviar figurinha após 3 tentativas: ${stickerError.message}`,
+            `Falha ao enviar figurinha. Caso tenha sido visualização única, o bot não tem mais capacidade de ler visualização única.`,
           );
         }
 
@@ -328,20 +329,22 @@ export async function createSticker(paramsHandler) {
 export async function processAutoSticker(paramsHandler) {
   const { isImage, isVideo, sendSuccessReact, webMessage } = paramsHandler;
 
-  const isDirectImage = !!webMessage?.message?.imageMessage;
-  const isDirectVideo = !!webMessage?.message?.videoMessage;
+  List_or_Image: {
+    const isDirectImage = !!webMessage?.message?.imageMessage;
+    const isDirectVideo = !!webMessage?.message?.videoMessage;
 
-  if (!isDirectImage && !isDirectVideo) {
-    return false;
-  }
+    if (!isDirectImage && !isDirectVideo) {
+      return false;
+    }
 
-  try {
-    await createSticker(paramsHandler);
-    await sendSuccessReact();
+    try {
+      await createSticker(paramsHandler);
+      await sendSuccessReact();
 
-    return true;
-  } catch (error) {
-    console.error("Erro no processamento automático de sticker:", error);
-    return false;
+      return true;
+    } catch (error) {
+      console.error("Erro no processamento automático de sticker:", error);
+      return false;
+    }
   }
 }
