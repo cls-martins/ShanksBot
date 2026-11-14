@@ -1,3 +1,7 @@
+/*
+Comando para ativar o bot nos grupos que foram desativados
+*/
+
 import { PREFIX } from "../../config.js";
 import { WarningError } from "../../errors/index.js";
 import { activateGroup } from "../../utils/database.js";
