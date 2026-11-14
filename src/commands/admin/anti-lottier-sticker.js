@@ -13,13 +13,8 @@ import { isFalse, isTrue } from "../../utils/index.js";
 export default {
   name: "anti-lottie-sticker",
   description:
-    "Ativa/desativa o recurso de anti-lottie-sticker no grupo, apagando a figurinha lottie se estiver ativo.",
-  commands: [
-    "anti-lottie-sticker",
-    "anti-lottie-figu",
-    "anti-lottie-figurinha",
-    "anti-lottie-figurinhas",
-  ],
+    "Ativa/desativa o recurso de anti-lottie-sticker no grupo, apagando a figurinha de spam se estiver ativo.",
+  commands: ["anti-lottie-sticker", "anti-lottie-figu", "anti-lottie-figurinha", "anti-lottie-figurinhas", "anti-spam-sticker"],
   usage: `${PREFIX}anti-lottie-sticker (1/0)`,
   /**
    * @param {CommandHandleProps} props
