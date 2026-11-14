@@ -1,3 +1,7 @@
+/*
+Administradores podem usar o comando para banir membros.
+*/
+
 import { BOT_LID, OWNER_LID, PREFIX } from "../../config.js";
 import { DangerError, InvalidParameterError } from "../../errors/index.js";
 import { onlyNumbers } from "../../utils/index.js";
