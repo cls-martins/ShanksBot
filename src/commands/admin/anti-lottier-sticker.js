@@ -1,3 +1,7 @@
+/*
+Faz administradores bloquearem envio de figurinhas repetidas (spam) no grupo.
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError, WarningError } from "../../errors/index.js";
 import {
