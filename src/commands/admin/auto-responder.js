@@ -1,3 +1,10 @@
+/*
+Ativa ou desativa o autoresponder nos grupos. 
+
+Esse comando está oculto para todos.
+Use (seu-prefixo + cmpt-ocultos) sendo dono do bot.
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError } from "../../errors/index.js";
 import {
