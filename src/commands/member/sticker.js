@@ -1,9 +1,7 @@
-/**
- * Desenvolvido por: Dev Gui
- * Implementação dos metadados feita por: MRX
- *
- * @author Dev Gui
- */
+/*
+Configurações do comando de sticker.
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError } from "../../errors/index.js";
 import { createSticker } from "../../services/sticker.js";
