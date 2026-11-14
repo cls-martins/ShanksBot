@@ -1,3 +1,7 @@
+/*
+Faz administradores bloquearem envio de qualquer sticker no grupo.
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError, WarningError } from "../../errors/index.js";
 import {
