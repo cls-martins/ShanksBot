@@ -1,3 +1,7 @@
+/*
+Administradores podem usar o bot para deletar uma mensagem.
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError } from "../../errors/index.js";
 import { deletePaymentMessageWithFallback } from "../../utils/deletePaymentMessage.js";
