@@ -1,3 +1,7 @@
+/*
+Comando de brincadeiras para ver o "perfil" de membros.
+*/
+
 import { ASSETS_DIR, PREFIX } from "../../config.js";
 import { InvalidParameterError } from "../../errors/index.js";
 import { getProfileImageData } from "../../services/baileys.js";
@@ -59,9 +63,27 @@ export default {
         userRole = "Administrador";
       }
 
+      // Estatísticas originais
       const randomPercent = Math.floor(Math.random() * 100);
       const programPrice = (Math.random() * 5000 + 1000).toFixed(2);
       const beautyLevel = Math.floor(Math.random() * 100) + 1;
+
+      // Novas estatísticas solicitadas
+      const atraente = Math.floor(Math.random() * 101);
+      const inteligente = Math.floor(Math.random() * 101);
+      const rico = Math.floor(Math.random() * 101);
+      const pobre = Math.floor(Math.random() * 101);
+      const estressado = Math.random() > 0.5 ? "Sim" : "Não";
+
+      // Lógica da Aura (valores de 50k a 800k ou -1 a -10%)
+      let auraVal = "";
+      if (Math.random() > 0.3) {
+        const kVal = Math.floor(Math.random() * (800 - 50 + 1)) + 50;
+        auraVal = `+${kVal}k`;
+      } else {
+        const negVal = Math.floor(Math.random() * 10) + 1;
+        auraVal = `-${negVal}%`;
+      }
 
       const mensagem = `
 👤 *Nome:* @${targetLid.split("@")[0]}
@@ -69,8 +91,15 @@ export default {
 
 🌚 *Programa:* R$ ${programPrice}
 🐮 *Gado:* ${randomPercent + 7 || 5}%
-🎱 *Passiva:* ${randomPercent + 5 || 10}%
-✨ *Beleza:* ${beautyLevel}%`;
+✨ *Beleza:* ${beautyLevel}%
+
+🔮 *Estatísticas:*
+✨ *Atraente:* ${atraente}%
+🧠 *Inteligente:* ${inteligente}%
+💰 *Rico:* ${rico}%
+💸 *Pobre:* ${pobre}%
+😡 *Estressado:* ${estressado}
+⚡ *Aura:* ${auraVal}`;
 
       const mentions = [targetLid];
 
