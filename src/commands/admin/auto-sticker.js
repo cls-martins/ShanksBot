@@ -1,3 +1,10 @@
+/*
+Faz administradores do grupo ativarem a figurinha automatica.
+
+Comando não está visivel. 
+Use (seu-prefixo + cmpt-ocultos) sendo dono do bot.
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError, WarningError } from "../../errors/index.js";
 import {
@@ -9,7 +16,7 @@ import { isFalse, isTrue } from "../../utils/index.js";
 
 export default {
   name: "auto-sticker",
-  description: "Ativa/desativa o recurso de auto-figurinha no grupo.",
+  description: "Ativa/desativa o recurso de auto-figurinha no grupo. O bot envia figurinha da imagem sem precisar usar o comando de sticker.",
   commands: ["auto-sticker", "auto-figu", "auto-fig", "auto-stick"],
   usage: `${PREFIX}auto-sticker (1/0)`,
   /**
