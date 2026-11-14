@@ -90,7 +90,6 @@ export async function connect() {
     keepAliveIntervalMs: 30_000,
     maxMsgRetryCount: 5,
     markOnlineOnConnect: false, // Desativa o "online para sempre" ao ligar
-    browser: ["Chrome (Linux)", "Chrome", "120.0.0.0"], // Disfarça o bot como um navegador web comum
     syncFullHistory: false,
     emitOwnEvents: false,
     msgRetryCounterCache,
