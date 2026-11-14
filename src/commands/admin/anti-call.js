@@ -1,3 +1,7 @@
+/*
+Faz administradores bloquear qualquer tipo de ligação no grupo.
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError, WarningError } from "../../errors/index.js";
 import {
