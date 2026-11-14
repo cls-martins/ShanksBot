@@ -2,7 +2,6 @@
  * Direcionador
  * de comandos.
  *
- * @author Dev Gui
  */
 import { BOT_EMOJI, ONLY_GROUP_ID } from "../config.js";
 import {
@@ -23,6 +22,7 @@ import { badMacHandler } from "./badMacHandler.js";
 import {
   getAutoResponderResponse,
   getPrefix,
+  getDisabledCommandsGroup,
   isActiveAntiLinkGroup,
   isActiveAutoResponderGroup,
   isActiveAutoStickerGroup,
@@ -31,6 +31,8 @@ import {
 } from "./database.js";
 import { findCommandImport } from "./index.js";
 import { errorLog } from "./logger.js";
+// Importa a verificação de ajudantes por grupo
+import { isHelper } from "../commands/admin/ajudante.js";
 
 /**
  * @param {CommandHandleProps} paramsHandler
@@ -109,14 +111,20 @@ export async function dynamicCommand(paramsHandler, startProcess) {
         await sendReact(BOT_EMOJI);
         const groupPrefix = getPrefix(remoteJid);
         await sendReply(
-          `O padrão é: ${groupPrefix}\nUse ${groupPrefix}menu para ver os comandos disponíveis!`
+          `O padrão é: ${groupPrefix}\n\nUse ${groupPrefix}menu para ver os comandos disponíveis!`
         );
       }
 
       return;
     }
 
-    if (!(await checkPermission({ type, ...paramsHandler }))) {
+    // --- LIBERAÇÃO DOS AJUDANTES NO MIDDLEWARE ---
+    const senderJid = webMessage.key.participant || webMessage.key.remoteJid;
+    const isAuthorizedHelper = isHelper(remoteJid, userLid) || isHelper(remoteJid, senderJid);
+    const hasStandardPermission = await checkPermission({ type, ...paramsHandler });
+
+    // Se for comando da pasta admin, permite se tiver a permissão normal OU se for um ajudante válido do grupo
+    if (!hasStandardPermission && !isAuthorizedHelper) {
       await sendErrorReply(
         "Você não tem permissão para executar este comando!"
       );
@@ -125,7 +133,8 @@ export async function dynamicCommand(paramsHandler, startProcess) {
 
     if (
       isActiveOnlyAdmins(remoteJid) &&
-      !(await isAdmin({ remoteJid, userLid, socket }))
+      !(await isAdmin({ remoteJid, userLid, socket })) &&
+      !isAuthorizedHelper
     ) {
       await sendWarningReply(
         "Somente administradores podem executar comandos!"
@@ -146,7 +155,10 @@ export async function dynamicCommand(paramsHandler, startProcess) {
         return;
       }
 
-      if (!(await checkPermission({ type, ...paramsHandler }))) {
+      const senderJid = webMessage.key.participant || webMessage.key.remoteJid;
+      const isAuthorizedHelper = isHelper(remoteJid, userLid) || isHelper(remoteJid, senderJid);
+
+      if (!(await checkPermission({ type, ...paramsHandler })) && !isAuthorizedHelper) {
         await sendErrorReply(
           "Você não tem permissão para executar este comando!"
         );
@@ -178,6 +190,24 @@ export async function dynamicCommand(paramsHandler, startProcess) {
     );
 
     return;
+  }
+
+  // --- VERIFICAÇÃO DE COMANDO BLOQUEADO NO GRUPO ---
+  if (activeGroup && command) {
+    const disabledCommands = getDisabledCommandsGroup(remoteJid);
+    
+    // Verifica por nome oficial, termo digitado ou qualquer alias/sinônimo do comando
+    const isBlocked =
+      disabledCommands.includes(command.name) ||
+      disabledCommands.includes(commandName) ||
+      (command.commands && command.commands.some((alias) => disabledCommands.includes(alias)));
+
+    if (isBlocked) {
+      await sendWarningReply(
+        `⚠️ O comando \`${commandName}\` está desativado neste grupo pelos administradores!`
+      );
+      return;
+    }
   }
 
   try {
