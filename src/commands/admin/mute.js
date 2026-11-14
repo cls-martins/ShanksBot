@@ -1,23 +1,18 @@
-/**
- * Desenvolvido por: Mkg
- * Refatorado por: Dev Gui
- *
- * @author Dev Gui
- */
+/*
+Comando de mutar membros, com 2 avisos e ban.
+*/
+
 import { BOT_LID, OWNER_LID, PREFIX } from "../../config.js";
 import { DangerError } from "../../errors/index.js";
 import { checkIfMemberIsMuted, muteMember } from "../../utils/database.js";
 import { onlyNumbers } from "../../utils/index.js";
+import { isHelper } from "./ajudante.js";
 
 export default {
   name: "mute",
-  description:
-    "Silencia um usuário no grupo (apaga as mensagens do usuário automáticamente).",
+  description: "Silencia um usuário no grupo (apaga as mensagens do usuário automaticamente).",
   commands: ["mute", "mutar"],
   usage: `${PREFIX}mute @usuario ou (responda à mensagem do usuário que deseja mutar)`,
-  /**
-   * @param {CommandHandleProps} props
-   */
   handle: async ({
     args,
     remoteJid,
@@ -26,50 +21,68 @@ export default {
     sendSuccessReply,
     getGroupMetadata,
     isGroup,
+    userLid,
+    webMessage,
   }) => {
     if (!isGroup) {
       throw new DangerError("Este comando só pode ser usado em grupos.");
     }
 
-    if (!args.length && !replyLid) {
+    const senderJid = webMessage.key.participant || webMessage.key.remoteJid;
+    const cleanSenderNumber = senderJid ? senderJid.replace(/[^0-9]/g, "") : "";
+
+    const groupMetadata = await getGroupMetadata();
+    const senderParticipant = groupMetadata.participants.find((p) => {
+      const pNumber = p.id.replace(/[^0-9]/g, "");
+      return pNumber === cleanSenderNumber;
+    });
+    const isAdmin =
+      senderParticipant?.admin === "admin" ||
+      senderParticipant?.admin === "superadmin";
+
+    const isAuthorizedHelper =
+      isHelper(remoteJid, senderJid) || (userLid && isHelper(remoteJid, userLid));
+
+    if (!isAdmin && !isAuthorizedHelper) {
+      throw new DangerError("Apenas administradores e ajudantes podem usar este comando!");
+    }
+
+    const mentions =
+      webMessage.message?.extendedTextMessage?.contextInfo?.mentionedJid;
+
+    if (!mentions?.length && !args.length && !replyLid) {
       throw new DangerError(
         `Você precisa mencionar um usuário ou responder à mensagem do usuário que deseja mutar.\n\nExemplo: ${PREFIX}mute @fulano`
       );
     }
 
-    const userId = replyLid
-      ? replyLid
-      : args[0]
-      ? `${onlyNumbers(args[0])}@lid`
-      : null;
+    // Pega o ID real da menção, da resposta ou monta pelo número digitado
+    const rawTarget = mentions?.[0] || replyLid || `${onlyNumbers(args[0])}@s.whatsapp.net`;
+    const targetUserNumber = onlyNumbers(rawTarget);
 
-    const targetUserNumber = onlyNumbers(userId);
+    // Encontra o participante exato no grupo (lid ou s.whatsapp.net)
+    const targetParticipant = groupMetadata.participants.find(
+      (p) => onlyNumbers(p.id) === targetUserNumber
+    );
 
-    if (OWNER_LID && userId === OWNER_LID) {
+    const userId = targetParticipant ? targetParticipant.id : rawTarget;
+
+    if (OWNER_LID && onlyNumbers(userId) === onlyNumbers(OWNER_LID)) {
       throw new DangerError("Você não pode mutar o dono do bot!");
     }
 
-    if (BOT_LID && userId === BOT_LID) {
+    if (BOT_LID && onlyNumbers(userId) === onlyNumbers(BOT_LID)) {
       throw new DangerError("Você não pode mutar o bot.");
     }
 
-    const groupMetadata = await getGroupMetadata();
-    const isUserInGroup = groupMetadata.participants.some(
-      (participant) => participant.id === userId
-    );
-
-    if (!isUserInGroup) {
+    if (!targetParticipant) {
       return sendErrorReply(
         `O usuário @${targetUserNumber} não está neste grupo.`,
         [userId]
       );
     }
 
-    const isTargetAdmin = groupMetadata.participants.some(
-      (participant) => participant.id === userId && participant.admin
-    );
-
-    if (isTargetAdmin) {
+    if (targetParticipant.admin) {
       throw new DangerError("Você não pode mutar um administrador.");
     }
 
@@ -83,7 +96,11 @@ export default {
     muteMember(remoteJid, userId);
 
     await sendSuccessReply(
-      `@${targetUserNumber} foi mutado com sucesso neste grupo!`,
+      `🔇 @${targetUserNumber} foi mutado com sucesso neste grupo!\n\n` +
+      `⚠️ *Regras do Mute:*\n` +
+      `• *2 msgs apagadas:* 1º Aviso\n` +
+      `• *5 msgs apagadas:* Último Aviso\n` +
+      `• *8 msgs apagadas:* Banimento automático`,
       [userId]
     );
   },
