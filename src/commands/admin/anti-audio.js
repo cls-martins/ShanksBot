@@ -1,3 +1,7 @@
+/*
+Faz administradores proibir o envio de audios no grupo.
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError, WarningError } from "../../errors/index.js";
 import {
