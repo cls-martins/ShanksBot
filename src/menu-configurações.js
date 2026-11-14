@@ -1,3 +1,7 @@
+/*
+Menu de configurações, altere a lista aqui
+*/
+
 import pkg from "../package.json" with { type: "json" };
 import { BOT_NAME } from "./config.js";
 import { getPrefix } from "./utils/database.js";
