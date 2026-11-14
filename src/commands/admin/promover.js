@@ -1,3 +1,7 @@
+/*
+Comando para promover membros a administradores do grupo.
+*/
+
 import { PREFIX } from "../../config.js";
 import { isGroup, onlyNumbers } from "../../utils/index.js";
 import { errorLog } from "../../utils/logger.js";
