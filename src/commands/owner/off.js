@@ -1,3 +1,7 @@
+/*
+Desliga o bot no grupo escolhido.
+*/
+
 import { PREFIX } from "../../config.js";
 import { WarningError } from "../../errors/index.js";
 import { deactivateGroup } from "../../utils/database.js";
