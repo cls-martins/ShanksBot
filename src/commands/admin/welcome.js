@@ -14,16 +14,7 @@ import { isFalse, isTrue } from "../../utils/index.js";
 export default {
   name: "welcome",
   description: "Ativo/desativo o recurso de boas-vindas no grupo.",
-  commands: [
-    "welcome",
-    "bemvindo",
-    "boasvinda",
-    "boasvindas",
-    "boavinda",
-    "boavindas",
-    "welkom",
-    "welkon",
-  ],
+  commands: ["welcome", "bemvindo", "boasvinda", "boasvindas", "boavinda", "boavindas", "welkom", "welkon"],
   usage: `${PREFIX}welcome (1/0)`,
   /**
    * @param {CommandHandleProps} props
