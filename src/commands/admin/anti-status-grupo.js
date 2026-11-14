@@ -1,3 +1,7 @@
+/*
+Faz administradores bloquearem a opção de colocar status no grupo.
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError, WarningError } from "../../errors/index.js";
 import {
@@ -10,11 +14,7 @@ export default {
   name: "anti-status-grupo",
   description:
     "Ativa/desativa o recurso de anti-status-grupo no grupo, removendo quem marcar status no grupo.",
-  commands: [
-    "anti-status-grupo",
-    "anti-marcacao-status-grupo",
-    "anti-marcação-status-grupo",
-  ],
+  commands: ["anti-status-grupo", "anti-marcacao-status-grupo", "anti-marcação-status-grupo"],
   usage: `${PREFIX}anti-status-grupo (1/0)`,
   /**
    * @param {CommandHandleProps} props
