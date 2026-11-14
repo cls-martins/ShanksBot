@@ -1,3 +1,7 @@
+/*
+Configuração do comando !anti-call
+*/
+
 import { BOT_EMOJI, BOT_LID, OWNER_LID } from "../config.js";
 import { isActiveGroupRestriction } from "../utils/database.js";
 import { errorLog } from "../utils/logger.js";
