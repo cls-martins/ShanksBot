@@ -1,3 +1,7 @@
+/*
+Comando para permitir apenas q administradores use os comandos do bot.
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError, WarningError } from "../../errors/index.js";
 import {
@@ -10,18 +14,7 @@ import { isFalse, isTrue } from "../../utils/index.js";
 export default {
   name: "only-admin",
   description: "Permite que só administradores utilizem meus comandos.",
-  commands: [
-    "only-admin",
-    "only-adm",
-    "only-administrator",
-    "only-administrators",
-    "only-admins",
-    "so-adm",
-    "so-admin",
-    "so-administrador",
-    "so-administradores",
-    "so-admins",
-  ],
+  commands: ["only-admin", "only-adm", "only-administrator", "only-administrators", "only-admins", "so-adm", "so-admin", "so-administrador", "so-administradores", "so-admins"],
   usage: `${PREFIX}only-admin 1`,
   /**
    * @param {CommandHandleProps} props
