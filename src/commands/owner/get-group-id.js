@@ -1,3 +1,7 @@
+/*
+Pega o ID do grupo pelo bot.
+*/
+
 import { PREFIX } from "../../config.js";
 import { WarningError } from "../../errors/index.js";
 
