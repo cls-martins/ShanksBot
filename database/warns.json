@@ -1,1 +1,71 @@
-{}
+{
+  "120363021297789461@g.us": {
+    "warnLimit": 3,
+    "warns": {
+      "177859175936081@lid": [
+        {
+          "reason": "Advertência genérica",
+          "timestamp": 1793911662789,
+          "valid": false
+        }
+      ],
+      "183129369231414@lid": [
+        {
+          "reason": "Advertência genérica",
+          "timestamp": 1793981581297,
+          "valid": true
+        }
+      ],
+      "52690793025720@lid": [
+        {
+          "reason": "Advertência genérica",
+          "timestamp": 1793997952859,
+          "valid": true
+        }
+      ],
+      "20620859420924@lid": [
+        {
+          "reason": "Advertência genérica",
+          "timestamp": 1794187301530,
+          "valid": false
+        },
+        {
+          "reason": "Advertência genérica",
+          "timestamp": 1794187377798,
+          "valid": false
+        }
+      ],
+      "193261381677265@lid": [
+        {
+          "reason": "Advertência genérica",
+          "timestamp": 1794429905425,
+          "valid": true
+        }
+      ],
+      "169140509757536@lid": [
+        {
+          "reason": "Advertência genérica",
+          "timestamp": 1794430133228,
+          "valid": true
+        },
+        {
+          "reason": "Advertência genérica",
+          "timestamp": 1794430170813,
+          "valid": false
+        }
+      ]
+    }
+  },
+  "120363411520958562@g.us": {
+    "warnLimit": 3,
+    "warns": {
+      "152948650848395@lid": [
+        {
+          "reason": "Advertência genérica",
+          "timestamp": 1794601546224,
+          "valid": true
+        }
+      ]
+    }
+  }
+}
