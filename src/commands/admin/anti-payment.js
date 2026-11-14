@@ -1,3 +1,7 @@
+/*
+Faz administradores bloquearem mensagem de pagamentos no grupo.
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError, WarningError } from "../../errors/index.js";
 import {
