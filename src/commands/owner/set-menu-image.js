@@ -1,3 +1,7 @@
+/*
+Muda a imagem do menu do bot
+*/
+
 import fs from "node:fs";
 import path from "node:path";
 import { ASSETS_DIR, PREFIX } from "../../config.js";
