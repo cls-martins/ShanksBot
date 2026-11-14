@@ -1,3 +1,7 @@
+/*
+Faz o bot fazer pesquisa de CEP.
+*/
+
 import { consultarCep } from "correios-brasil";
 import { PREFIX } from "../../../config.js";
 import { InvalidParameterError } from "../../../errors/index.js";
