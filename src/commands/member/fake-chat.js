@@ -1,6 +1,7 @@
 /*
 Comando para fazer fake-chat entre membros do grupo.
 */
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError } from "../../errors/index.js";
 
