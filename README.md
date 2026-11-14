@@ -228,7 +228,7 @@ winget install Python.Python.3.13
 npm install yt search
 ```
 ```sh
-npm install yt-dlp.yt-dlp
+winget install yt-dlp
 ```
 
 9 - Execute o bot.
