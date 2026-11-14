@@ -2,7 +2,6 @@
  * Funções úteis para trabalhar
  * com dados.
  *
- * @author Dev Gui
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -28,6 +27,7 @@ const ONLY_ADMINS_FILE = "only-admins";
 const PREFIX_GROUPS_FILE = "prefix-groups";
 const RESTRICTED_MESSAGES_FILE = "restricted-messages";
 const WELCOME_GROUPS_FILE = "welcome-groups";
+const DISABLED_COMMANDS_FILE = "disabled-commands";
 
 function createIfNotExists(fullPath, formatIfNotExists = []) {
   if (!fs.existsSync(fullPath)) {
@@ -327,51 +327,86 @@ export function isActiveAutoStickerGroup(groupId) {
   return autoStickerGroups.includes(groupId);
 }
 
+// --- FUNÇÕES DE MUTE ATUALIZADAS (SUPORTE A CONTADORES DE INFRAÇÃO) ---
+
 export function muteMember(groupId, memberId) {
   const filename = MUTE_FILE;
+  const mutedMembers = readJSON(filename, {});
 
-  const mutedMembers = readJSON(filename, JSON.stringify({}));
-
-  if (!mutedMembers[groupId]) {
-    mutedMembers[groupId] = [];
+  if (!mutedMembers[groupId] || Array.isArray(mutedMembers[groupId])) {
+    mutedMembers[groupId] = {};
   }
 
-  if (!mutedMembers[groupId]?.includes(memberId)) {
-    mutedMembers[groupId].push(memberId);
-  }
-
-  writeJSON(filename, mutedMembers);
+  mutedMembers[groupId][memberId] = 0; // Inicializa o contador de mensagens apagadas em 0
+  writeJSON(filename, mutedMembers, {});
 }
 
 export function unmuteMember(groupId, memberId) {
   const filename = MUTE_FILE;
-
-  const mutedMembers = readJSON(filename, JSON.stringify({}));
+  const mutedMembers = readJSON(filename, {});
 
   if (!mutedMembers[groupId]) {
     return;
   }
 
-  const index = mutedMembers[groupId].indexOf(memberId);
-
-  if (index !== -1) {
-    mutedMembers[groupId].splice(index, 1);
+  if (Array.isArray(mutedMembers[groupId])) {
+    const index = mutedMembers[groupId].indexOf(memberId);
+    if (index !== -1) {
+      mutedMembers[groupId].splice(index, 1);
+    }
+  } else {
+    delete mutedMembers[groupId][memberId];
+    if (Object.keys(mutedMembers[groupId]).length === 0) {
+      delete mutedMembers[groupId];
+    }
   }
 
-  writeJSON(filename, mutedMembers);
+  writeJSON(filename, mutedMembers, {});
 }
 
 export function checkIfMemberIsMuted(groupId, memberId) {
   const filename = MUTE_FILE;
-
-  const mutedMembers = readJSON(filename, JSON.stringify({}));
+  const mutedMembers = readJSON(filename, {});
 
   if (!mutedMembers[groupId]) {
     return false;
   }
 
-  return mutedMembers[groupId]?.includes(memberId);
+  if (Array.isArray(mutedMembers[groupId])) {
+    return mutedMembers[groupId].includes(memberId);
+  }
+
+  return Object.prototype.hasOwnProperty.call(mutedMembers[groupId], memberId);
 }
+
+export function incrementMutedMessageCount(groupId, memberId) {
+  const filename = MUTE_FILE;
+  const mutedMembers = readJSON(filename, {});
+
+  if (!mutedMembers[groupId]) {
+    mutedMembers[groupId] = {};
+  }
+
+  if (Array.isArray(mutedMembers[groupId])) {
+    const oldList = mutedMembers[groupId];
+    mutedMembers[groupId] = {};
+    oldList.forEach((id) => {
+      mutedMembers[groupId][id] = 0;
+    });
+  }
+
+  if (mutedMembers[groupId][memberId] === undefined) {
+    mutedMembers[groupId][memberId] = 0;
+  }
+
+  mutedMembers[groupId][memberId] += 1;
+  const count = mutedMembers[groupId][memberId];
+
+  writeJSON(filename, mutedMembers, {});
+  return count;
+}
+
+// --------------------------------------------------------------------
 
 export function activateOnlyAdmins(groupId) {
   const filename = ONLY_ADMINS_FILE;
@@ -536,4 +571,38 @@ export function getSpiderApiToken() {
   const config = readJSON(filename, {});
 
   return config.spider_api_token || SPIDER_API_TOKEN;
+}
+
+// --- FUNÇÕES PARA BLOQUEIO DE COMANDOS POR GRUPO ---
+
+export function getDisabledCommandsGroup(groupId) {
+  const disabledData = readJSON(DISABLED_COMMANDS_FILE, {});
+  return disabledData[groupId] || [];
+}
+
+export function disableCommandGroup(groupId, commandName) {
+  const disabledData = readJSON(DISABLED_COMMANDS_FILE, {});
+  if (!disabledData[groupId]) {
+    disabledData[groupId] = [];
+  }
+
+  if (!disabledData[groupId].includes(commandName)) {
+    disabledData[groupId].push(commandName);
+    writeJSON(DISABLED_COMMANDS_FILE, disabledData, {});
+  }
+}
+
+export function enableCommandGroup(groupId, commandName) {
+  const disabledData = readJSON(DISABLED_COMMANDS_FILE, {});
+  if (!disabledData[groupId]) return;
+
+  disabledData[groupId] = disabledData[groupId].filter(
+    (cmd) => cmd !== commandName
+  );
+
+  if (disabledData[groupId].length === 0) {
+    delete disabledData[groupId];
+  }
+
+  writeJSON(DISABLED_COMMANDS_FILE, disabledData, {});
 }
