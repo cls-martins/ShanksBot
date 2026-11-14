@@ -1,3 +1,7 @@
+/*
+Comando para divorciar o casamento do grupo
+*/
+
 import { PREFIX } from "../../config.js";
 import { WarningError } from "../../errors/index.js";
 import { removeMarriage } from "../../utils/marriageDatabase.js";
