@@ -1,3 +1,7 @@
+/*
+Aqui é onde fica a configuração do comando do menu.
+*/
+
 import path from "node:path";
 import { ASSETS_DIR, PREFIX } from "../../config.js";
 import { menuMessage } from "../../menu.js";
