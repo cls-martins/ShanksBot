@@ -1,3 +1,7 @@
+/*
+Faz administradores bloquearem o envio de eventos no grupo.
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError, WarningError } from "../../errors/index.js";
 import {
