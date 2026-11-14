@@ -1,5 +1,5 @@
 /**
- * Script de
+* Script de
  * inicialização do bot.
  *
  * Este script é
@@ -12,7 +12,6 @@
  * a menos que você saiba
  * o que está fazendo.
  *
- * @author Dev Gui
  */
 import makeWASocket, {
   DisconnectReason,
@@ -90,7 +89,8 @@ export async function connect() {
     connectTimeoutMs: 20_000,
     keepAliveIntervalMs: 30_000,
     maxMsgRetryCount: 5,
-    markOnlineOnConnect: true,
+    markOnlineOnConnect: false, // Desativa o "online para sempre" ao ligar
+    browser: ["Chrome (Linux)", "Chrome", "120.0.0.0"], // Disfarça o bot como um navegador web comum
     syncFullHistory: false,
     emitOwnEvents: false,
     msgRetryCounterCache,
