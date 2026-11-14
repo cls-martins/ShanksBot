@@ -67,7 +67,6 @@
  *
  * Não pule etapas! Leia-o completo, pois ele é muito importante para você entender como o bot funciona!
  *
- * By: Dev Gui
  *
  * Não modifique nada abaixo, a não ser que saiba o que está fazendo!
  */
