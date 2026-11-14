@@ -1,3 +1,7 @@
+/*
+Faz o bot marcar todos com uma mensagem de "removeu você"
+*/
+
 import { PREFIX } from "../../config.js";
 
 export default {
@@ -12,6 +16,6 @@ export default {
     const { participants } = await socket.groupMetadata(remoteJid);
     const mentions = participants.map(({ id }) => id);
     await sendReact("📢");
-    await sendText(`📢 Marcando todos!\n\n${fullArgs}`, mentions);
+    await sendText(`Removeu você...\n\n${fullArgs}`, mentions);
   },
 };
