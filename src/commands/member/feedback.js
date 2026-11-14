@@ -1,6 +1,10 @@
+/*
+Comando para feedback, reportar e entre outros.
+*/
+
 import { PREFIX } from "../../config.js";
 
-// Números formatados (com e sem o 9º dígito para evitar falha de entrega do Baileys)
+// Números formatados (coloque seu número com e sem o 9º dígito para receber feedback do bot)
 const OWNER_JIDS = [
   "5588981924454@s.whatsapp.net", // Com 9
   "558881924454@s.whatsapp.net"   // Sem 9
