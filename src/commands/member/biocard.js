@@ -1,3 +1,7 @@
+/*
+Comando da parceria BioCard
+*/
+
 import fs from "fs";
 import path from "path";
 import { PREFIX } from "../../config.js";
