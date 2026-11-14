@@ -1,3 +1,7 @@
+/*
+Comando para rebaixar o administrador para membro.
+*/
+
 import { PREFIX } from "../../config.js";
 import { isGroup, onlyNumbers } from "../../utils/index.js";
 import { errorLog } from "../../utils/logger.js";
