@@ -99,13 +99,17 @@ pkg update && pkg upgrade -y
 pkg install python -y 
 ```
 ```sh
+npm install jimp --no-bin-links
+```
+e por ultimo
+```sh
 npm install yt-dlp.yt-dlp --no-bin-links
 ```
 ou 
 ```sh
 winget install yt-dlp.yt-dlp --no-bin-links
 ```
-Se você usou uma pasta interna do Termux (fora da `~/storage`), pode instalar normalmente:
+Se você usou uma pasta interna do Termux (fora da `~/storage`), pode instalar normalmente (faça os comandos acima para instalar as dependencias tbm, apenas remova o "--no-bin-links" do final):
 
 ```sh
 npm install
@@ -230,7 +234,9 @@ npm install yt search
 ```sh
 winget install yt-dlp
 ```
-
+```sh
+winget install jimp
+```
 9 - Execute o bot.
 
 ```sh
