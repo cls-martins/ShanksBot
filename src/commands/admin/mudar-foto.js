@@ -4,7 +4,7 @@ Muda a foto do grupo usando o bot.
 
 import fs from "node:fs";
 import path from "node:path";
-import Jimp from "jimp";
+import { Jimp } from "jimp";
 import { PREFIX, TEMP_DIR } from "../../config.js";
 import { getRandomName } from "../../utils/index.js";
 
@@ -82,9 +82,10 @@ export default {
         return await sendErrorReply("❌ Falha ao baixar a imagem. Tente novamente.");
       }
 
-      // Redimensiona para o tamanho ideal do perfil (640x640) usando Jimp
+      // Redimensiona para o tamanho ideal do perfil (640x640) usando a nova sintaxe do Jimp v1+
       const image = await Jimp.read(inputPath);
-      await image.cover(640, 640).writeAsync(resizedPath);
+      image.cover({ w: 640, h: 640 });
+      await image.write(resizedPath);
 
       // Atualiza a foto de perfil do grupo
       await socket.updateProfilePicture(remoteJid, { url: resizedPath });
