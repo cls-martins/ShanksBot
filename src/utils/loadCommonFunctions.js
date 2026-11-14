@@ -1,13 +1,12 @@
 /**
- * Funções comuns de uso geral
- * do bot. Não há
- * necessidade de modificar
- * este arquivo.
+* Funções comuns de uso geral
+ * do bot. (Otimizado com Cache de Grupo)
+ * só altere se você tiver certeza com o que quer mexer.
  *
- * @author Dev Gui
  */
 import { delay } from "baileys";
 import fs from "node:fs";
+import NodeCache from "node-cache";
 import { BOT_EMOJI, TIMEOUT_IN_MILLISECONDS_BY_EVENT } from "../config.js";
 import {
   ajustAudioByBuffer,
@@ -17,6 +16,9 @@ import {
   onlyNumbers,
   removeFileWithTimeout,
 } from "./index.js";
+
+// Cache para metadados de grupos (Dura 5 minutos para evitar consultas excessivas em grupos grandes)
+const groupMetadataCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
 
 export function loadCommonFunctions({ socket, webMessage }) {
   const {
@@ -753,7 +755,16 @@ export function loadCommonFunctions({ socket, webMessage }) {
       return null;
     }
 
-    return await socket.groupMetadata(groupJid);
+    // Verifica se já existe no cache
+    const cachedMetadata = groupMetadataCache.get(groupJid);
+    if (cachedMetadata) {
+      return cachedMetadata;
+    }
+
+    // Se não estiver no cache, busca do WhatsApp e salva por 5 minutos
+    const metadata = await socket.groupMetadata(groupJid);
+    groupMetadataCache.set(groupJid, metadata);
+    return metadata;
   };
 
   const getGroupName = async (groupJid = remoteJid) => {
