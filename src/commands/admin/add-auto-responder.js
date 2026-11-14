@@ -1,3 +1,9 @@
+/*
+Essa versão do código de takeshi-bot não possui esse comando visível na estrutura.
+Para poder acessar o comando configure o config.js para você ser o dono do bot, em
+seguida digite (seu-prefixo + cmpt-ocultos).
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError } from "../../errors/index.js";
 import { addAutoResponderItem } from "../../utils/database.js";
