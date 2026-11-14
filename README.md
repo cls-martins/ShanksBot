@@ -26,7 +26,8 @@
 # Importante!
 ## Leia o conteúdo abaixo antes de qualquer coisa.
 
-O código deste repositório está alterado para ser usado como ShanksBot. Utilize o https:github.com/guiireal/takeshi-bot como repositório de instalação de teste e repositório de auxílio, para depois aplicar a instalação através deste.
+O código deste repositório está alterado para ser usado como ShanksBot. Utilize o https:github.com/guiireal/takeshi-bot como repositório de instalação de teste e repositório de auxílio, para depois aplicar a instalação através deste. 
+### LEIA O TUTORIAL COMPLETO! ESTÁ COM O CONTEÚDO DIFERENTE DO TAKESHI-BOT
 
 ## Sobre este projeto
 
@@ -83,16 +84,34 @@ chmod -R 755 ./*
 
 7 - Instale as dependências do projeto.
 
-Se você escolheu uma pasta de armazenamento compartilhado (como `/sdcard`, `~/storage/emulated/0` ou a pasta `Download`), use a flag `--no-bin-links`, pois esse tipo de armazenamento não suporta links simbólicos e o `npm install` normal vai falhar:
+Se você escolheu uma pasta de armazenamento compartilhado (como `/sdcard`, `~/storage/emulated/0` ou a pasta `Download`), use a flag `--no-bin-links`, pois esse tipo de armazenamento não suporta links simbólicos e o `npm install` normal vai falhar. Instale esses comandos um atrás do outro:
 
 ```sh
 npm install --no-bin-links
 ```
-
+```sh
+npm install yt search --no-bin-links
+```
+```sh
+npm install yt-dlp.yt-dlp --no-bin-links
+```
+ou 
+```sh
+winget install yt-dlp.yt-dlp --no-bin-links
+```
 Se você usou uma pasta interna do Termux (fora da `~/storage`), pode instalar normalmente:
 
 ```sh
 npm install
+```
+```sh
+npm install yt search
+```
+
+se o npm install yt search não funcionar, tente..
+
+```sh
+npm install yt-dlp.yt-dlp
 ```
 
 8 - Execute o bot.
@@ -195,6 +214,12 @@ cd takeshi-bot
 
 ```sh
 npm install
+```
+```sh
+npm install yt search
+```
+```sh
+npm install yt-dlp.yt-dlp
 ```
 
 9 - Execute o bot.
