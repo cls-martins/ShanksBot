@@ -1,3 +1,7 @@
+/*
+Comando para tirar a advertencia do membro do grupo
+*/
+
 import { BOT_LID, OWNER_LID } from "../../config.js";
 import { DangerError, InvalidParameterError } from "../../errors/index.js";
 import { onlyNumbers } from "../../utils/index.js";
@@ -7,20 +11,12 @@ import {
   removeLastWarn,
   revokeWarnByIndex,
 } from "../../utils/warnSystem.js";
+import { isHelper } from "./ajudante.js";
 
 export default {
   name: "unwarn",
   description: "Remove ou lista advertências válidas.",
-  commands: [
-    "unwarn",
-    "perdoaradvertência",
-    "perdoaradvt",
-    "removeradvertencia",
-    "advtremove",
-  ],
-  /**
-   * @param {CommandHandleProps} props
-   */
+  commands: ["unwarn", "perdoaradvertência", "perdoaradvt", "removeradvertencia", "advtremove"],
   handle: async ({
     args,
     isReply,
@@ -28,8 +24,30 @@ export default {
     remoteJid,
     sendReply,
     sendErrorReply,
+    userLid,
+    isGroup,
+    getGroupMetadata,
+    webMessage,
   }) => {
     try {
+      if (isGroup) {
+        const senderJid = webMessage.key.participant || webMessage.key.remoteJid;
+        const cleanSenderNumber = senderJid ? senderJid.replace(/[^0-9]/g, "") : "";
+
+        const groupMetadata = await getGroupMetadata();
+        const senderParticipant = groupMetadata.participants.find(p => {
+          const pNumber = p.id.replace(/[^0-9]/g, "");
+          return pNumber === cleanSenderNumber;
+        });
+        const isAdmin = senderParticipant?.admin === "admin" || senderParticipant?.admin === "superadmin";
+
+        const isAuthorizedHelper = isHelper(remoteJid, senderJid) || (userLid && isHelper(remoteJid, userLid));
+
+        if (!isAdmin && !isAuthorizedHelper) {
+          throw new DangerError("Apenas administradores e ajudantes podem usar este comando!");
+        }
+      }
+
       if (!args.length && !isReply) {
         throw new InvalidParameterError(
           "Mencione um usuário ou responda a uma mensagem.",
