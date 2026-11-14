@@ -1,3 +1,10 @@
+/*
+Faz administradores deletarem o auto-responder do bot.
+
+O comando está oculto.
+Utilize (seu-prefixo + cmpt-ocultos) sendo dono do bot.
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError } from "../../errors/index.js";
 import { removeAutoResponderItemByKey } from "../../utils/database.js";
@@ -5,16 +12,7 @@ import { removeAutoResponderItemByKey } from "../../utils/database.js";
 export default {
   name: "delete-auto-responder",
   description: "Remove um termo do auto-responder pelo ID",
-  commands: [
-    "delete-auto-responder",
-    "delete-auto",
-    "delete-responder",
-    "del-auto",
-    "del-responder",
-    "remove-auto-responder",
-    "remove-auto",
-    "remove-responder",
-  ],
+  commands: ["delete-auto-responder", "delete-auto", "delete-responder", "del-auto", "del-responder", "remove-auto-responder", "remove-auto", "remove-responder"],
   usage: `${PREFIX}delete-auto-responder 1`,
   /**
    * @param {CommandHandleProps} props
