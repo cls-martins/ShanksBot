@@ -1,3 +1,7 @@
+/*
+Faz administradores ativar as mensagens de saída do grupo. 
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError, WarningError } from "../../errors/index.js";
 import {
