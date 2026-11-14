@@ -1,3 +1,7 @@
+/*
+Comando para fazer o bot enviar audio.
+*/
+
 import { PREFIX } from "../../config.js";
 import { WarningError } from "../../errors/index.js";
 
