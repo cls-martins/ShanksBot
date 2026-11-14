@@ -1,3 +1,7 @@
+/*
+Comando para casar e fazer trisais no bot.
+*/
+
 import { PREFIX } from "../../config.js";
 import { WarningError } from "../../errors/index.js";
 import {
