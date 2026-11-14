@@ -1,3 +1,7 @@
+/*
+Comando para mudar o prefixo do bot
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError } from "../../errors/index.js";
 import { setPrefix } from "../../utils/database.js";
@@ -5,18 +9,7 @@ import { setPrefix } from "../../utils/database.js";
 export default {
   name: "set-prefix",
   description: "Mudo o prefixo de uso dos meus comandos",
-  commands: [
-    "set-prefix",
-    "altera-prefix",
-    "altera-prefixo",
-    "alterar-prefix",
-    "alterar-prefixo",
-    "muda-prefix",
-    "muda-prefixo",
-    "mudar-prefix",
-    "mudar-prefixo",
-    "set-prefixo",
-  ],
+  commands: ["set-prefix", "altera-prefix", "altera-prefixo", "alterar-prefix", "alterar-prefixo", "muda-prefix", "muda-prefixo", "mudar-prefix", "mudar-prefixo", "set-prefixo"],
   usage: `${PREFIX}set-prefix =`,
   /**
    * @param {CommandHandleProps} props
