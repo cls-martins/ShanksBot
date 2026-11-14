@@ -1,3 +1,10 @@
+/*
+Envia a lista de auto-responder do grupo.
+
+Esse comando está oculto.
+Use (seu-prefixo + cmpt-ocultos) sendo dono do bot para visualizar o comando.
+*/
+
 import { delay } from "baileys";
 import { PREFIX } from "../../config.js";
 import { listAutoResponderItems } from "../../utils/database.js";
