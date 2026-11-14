@@ -2,11 +2,14 @@
  * Evento chamado quando uma mensagem
  * é enviada para o grupo do WhatsApp
  *
- * @author Dev Gui
  */
 import { DEVELOPER_MODE } from "../config.js";
 import { badMacHandler } from "../utils/badMacHandler.js";
-import { checkIfMemberIsMuted } from "../utils/database.js";
+import {
+  checkIfMemberIsMuted,
+  incrementMutedMessageCount,
+  unmuteMember,
+} from "../utils/database.js";
 import { dynamicCommand } from "../utils/dynamicCommand.js";
 import {
   GROUP_PARTICIPANT_ADD,
@@ -84,26 +87,55 @@ export async function onMessagesUpsert({ socket, messages, startProcess }) {
 
         return;
       }
-      if (
-        checkIfMemberIsMuted(
-          webMessage?.key?.remoteJid,
-          webMessage?.key?.participant?.replace(/:[0-9][0-9]|:[0-9]/g, ""),
-        )
-      ) {
+
+      // --- VERIFICAÇÃO E MECÂNICA DE MEMBROS MUTADOS ---
+      const remoteJid = webMessage?.key?.remoteJid;
+      const rawParticipant = webMessage?.key?.participant || webMessage?.participant;
+      const cleanParticipantId = rawParticipant?.replace(/:[0-9][0-9]|:[0-9]/g, "");
+
+      if (checkIfMemberIsMuted(remoteJid, cleanParticipantId)) {
         try {
-          const { id, remoteJid, participant } = webMessage.key;
+          const { id } = webMessage.key;
 
           const deleteKey = {
             remoteJid,
             fromMe: false,
             id,
-            participant,
+            participant: rawParticipant,
           };
 
+          // 1. Apaga a mensagem enviada pelo membro mutado
           await socket.sendMessage(remoteJid, { delete: deleteKey });
+
+          // 2. Incrementa o contador de infrações no banco de dados
+          const deletedCount = incrementMutedMessageCount(remoteJid, cleanParticipantId);
+          const targetNumber = cleanParticipantId ? cleanParticipantId.replace(/[^0-9]/g, "") : "";
+          const userMention = rawParticipant || cleanParticipantId;
+
+          // 3. Aplica os avisos ou o banimento de acordo com o total de mensagens apagadas
+          if (deletedCount === 2) {
+            await socket.sendMessage(remoteJid, {
+              text: `⚠️ *1º AVISO* ⚠️\n\n@${targetNumber}, você está mutado e suas mensagens estão a ser apagadas! Pare de enviar mensagens ou sofrerá consequências. *(2/8)*`,
+              mentions: [userMention],
+            });
+          } else if (deletedCount === 5) {
+            await socket.sendMessage(remoteJid, {
+              text: `🚨 *ÚLTIMO AVISO* 🚨\n\n@${targetNumber}, se continuar a enviar mensagens enquanto estiver mutado, será banido automaticamente do grupo! *(5/8)*`,
+              mentions: [userMention],
+            });
+          } else if (deletedCount >= 8) {
+            await socket.sendMessage(remoteJid, {
+              text: `🔨 *BANIDO POR INSISTÊNCIA* 🔨\n\n@${targetNumber} atingiu o limite de 8 mensagens enviadas enquanto estava mutado e foi removido do grupo.`,
+              mentions: [userMention],
+            });
+
+            // Remove o usuário do grupo e limpa o mute dele da base de dados
+            await socket.groupParticipantsUpdate(remoteJid, [cleanParticipantId], "remove");
+            unmuteMember(remoteJid, cleanParticipantId);
+          }
         } catch (error) {
           errorLog(
-            `Erro ao deletar mensagem de membro silenciado, provavelmente eu não sou administrador do grupo! ${error.message}`,
+            `Erro ao processar mensagem de membro silenciado (verifique se sou administrador): ${error.message}`,
           );
         }
 
