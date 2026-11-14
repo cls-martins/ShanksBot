@@ -1,3 +1,7 @@
+/*
+Liga a mensagem de boas vindas do grupo.
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError, WarningError } from "../../errors/index.js";
 import {
