@@ -93,6 +93,12 @@ npm install --no-bin-links
 npm install yt search --no-bin-links
 ```
 ```sh
+pkg update && pkg upgrade -y
+```
+```sh
+pkg install python -y 
+```
+```sh
 npm install yt-dlp.yt-dlp --no-bin-links
 ```
 ou 
@@ -214,6 +220,9 @@ cd shanksbot
 
 ```sh
 npm install
+```
+```sh
+winget install Python.Python.3.13
 ```
 ```sh
 npm install yt search
