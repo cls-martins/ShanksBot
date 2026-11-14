@@ -1,3 +1,7 @@
+/*
+Comando para mudar o nome do grupo.
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError, WarningError } from "../../errors/index.js";
 import { errorLog } from "../../utils/logger.js";
