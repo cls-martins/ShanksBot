@@ -1,3 +1,7 @@
+/*
+Comando para ver a lista de casais do grupo
+*/
+
 import { PREFIX } from "../../config.js";
 import { WarningError } from "../../errors/index.js";
 import { getGroupMarriages } from "../../utils/marriageDatabase.js";
