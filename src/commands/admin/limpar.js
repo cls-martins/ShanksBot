@@ -1,3 +1,9 @@
+/*
+Faz o bot limpar o grupo enviando um texto que não dá pra arrastar pra cima.
+
+OBS: Dá pra voltar nas mensagens pesquisando uma mensagem antiga, mas arrastando não kkkkkkkkkk
+*/
+
 import { PREFIX } from "../../config.js";
 import { WarningError } from "../../errors/index.js";
 import { sendCleanChat } from "../../utils/cleanChat.js";
@@ -5,17 +11,7 @@ import { sendCleanChat } from "../../utils/cleanChat.js";
 export default {
   name: "limpar-chat",
   description: "Limpa o histórico de mensagens do grupo.",
-  commands: [
-    "limpar-chat",
-    "clean-chat",
-    "clean",
-    "clear-chat",
-    "clear",
-    "lc",
-    "limpa-chat",
-    "limpa",
-    "limpar",
-  ],
+  commands: ["limpar-chat", "clean-chat", "clean", "clear-chat", "clear", "lc", "limpa-chat", "limpa", "limpar"],
   usage: `${PREFIX}limpar-chat`,
   /**
    * @param {CommandHandleProps} props
