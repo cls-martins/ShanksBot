@@ -1,17 +1,14 @@
+/*
+Faz administradores fecharem o grupo apenas para adms.
+*/
+
 import { PREFIX } from "../../config.js";
 import { errorLog } from "../../utils/logger.js";
 
 export default {
   name: "fechar",
   description: "Fecha o grupo.",
-  commands: [
-    "fechar",
-    "fecha",
-    "fechar-grupo",
-    "fecha-grupo",
-    "close",
-    "close-group",
-  ],
+  commands: ["fechar", "fecha", "fechar-grupo", "fecha-grupo", "close", "close-group"],
   usage: `${PREFIX}fechar`,
   /**
    * @param {CommandHandleProps} props
