@@ -1,3 +1,7 @@
+/*
+Comando para renomear as figurinhas e tirar o nome do pacote e autor.
+*/
+
 import fs from "node:fs";
 import { PREFIX } from "../../config.js";
 import { DangerError, InvalidParameterError } from "../../errors/index.js";
