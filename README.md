@@ -183,6 +183,8 @@ export default {
 ```
 Você pode apagar os arquivos `biocard`, `cinema` e `newgen` que estão configurados como parceiros
 em `src\commands\member`
+
+
 12 - Inicie o bot novamente.
 
 ```sh
