@@ -136,17 +136,18 @@ npm start
 
 11 - Aguarde 10 segundos, depois digite `CTRL + C` para parar o bot.
 
-Depois, Configure o arquivo `config.js` que está dentro da pasta `src`.
+Depois configure os seguintes arquivos:
+Arquivo `config.js` que está dentro da pasta `src`.
 
 ```js
 // Prefixo padrão dos comandos.
-export const PREFIX = "/";
+export const PREFIX = "!";
 
 // Emoji do bot (mude se preferir).
-export const BOT_EMOJI = "🤖";
+export const BOT_EMOJI = "⚜️";
 
 // Nome do bot (mude se preferir).
-export const BOT_NAME = "Takeshi Bot";
+export const BOT_NAME = "ShanksBot ";
 
 // LID do bot (no caso, o que você rodará o bot).
 // Para obter o LID do bot, use o comando <prefixo>lid respondendo em cima de uma mensagem do número do bot
@@ -158,7 +159,30 @@ export const BOT_LID = "12345678901234567890@lid";
 // Troque o <prefixo> pelo prefixo do bot (ex: /meu-lid).
 export const OWNER_LID = "12345678901234567890@lid";
 ```
+Configure o arquivo `feedback.js` que está dentro da pasta `src\commands\member`.
 
+```js
+/*
+Comando para feedback, reportar e entre outros.
+*/
+
+import { PREFIX } from "../../config.js";
+
+// Números formatados (coloque seu número com e sem o 9º dígito para receber feedback do bot)
+// é aqui onde você deve alterar, coloque o seu número aqui.
+const OWNER_JIDS = [
+  "5588981924454@s.whatsapp.net", // Com 9
+  "558881924454@s.whatsapp.net"   // Sem 9
+];
+
+export default {
+  name: "feedback / reportar / bug",
+  description: "Envia um feedback, report de erro ou sugestão diretamente para o dono do bot",
+  commands: ["feedback", "reportar", "bug", "report", "sugestao"],
+  usage: `${PREFIX}reportar <sua mensagem / descrição do erro>`,
+```
+Você pode apagar os arquivos `biocard`, `cinema` e `newgen` que estão configurados como parceiros
+em `src\commands\member`
 12 - Inicie o bot novamente.
 
 ```sh
@@ -353,49 +377,52 @@ export async function customMiddleware({ type, commonFunctions }) {
 
 ## Estrutura de pastas
 
-- 📁 .github ➔ _workflows de CI/CD e arquivo para o agente do copilot_
 - 📁 assets ➔ _arquivos de mídia_
-  - 📁 auth ➔ _arquivos da conexão do bot_
-  - 📁 images ➔ _arquivos de imagem_
-    - 📁 funny ➔ _gifs de comandos de diversão_
-  - 📁 samples ➔ _arquivos de exemplo para testes_
-  - 📁 temp ➔ _arquivos temporários_
-- 📁 database ➔ _arquivos de dados_
-- 📁 diagrams ➔ _diagramas de fluxos de dados e execução do Bot_
+   - 📁 auth ➔ _arquivos da conexão do bot_
+   - 📁 images ➔ _arquivos de imagem_
+       - 📁 funny ➔ _gifs de comandos de diversão_
+   - 📁 stickers/dice ➔ _stickers do comando dado_
+   - 📁 temp ➔ _arquivos temporários_
+- 📁 database ➔ _arquivos de dados dos comandos_
 - 📁 node_modules ➔ _módulos do Node.js_
 - 📁 scripts ➔ _scripts de apoio, incluindo o patch de botões e listas do Baileys_
 - 📁 src ➔ _código fonte do bot (geralmente você mexerá mais aqui)_
-  - 📁 @types ➔ _pasta onde fica as definições de tipos_
-  - 📁 commands ➔ _pasta onde ficam os comandos_
-    - 📁 admin ➔ _pasta onde ficam os comandos administrativos_
-    - 📁 member ➔ _pasta onde ficam os comandos gerais (todos poderão utilizar)_
-      - 📁 exemplos ➔ _pasta de exemplos apenas para exploração e reaproveitamento em comandos próprios_
-    - 📁 owner ➔ _pasta onde ficam os comandos de dono (grupo e bot)_
-    - 📝🤖-como-criar-comandos.js ➔ _arquivo de exemplo de como criar um comando_
-  - 📁 errors ➔ _classes de erros usadas nos comandos_
-  - 📁 middlewares ➔ _interceptadores de requisições_
-  - 📁 services ➔ _serviços diversos_
-  - 📁 test ➔ _testes_
-  - 📁 utils ➔ _utilitários_
-  - 📝 config.js ➔ _arquivo de configurações do bot_
-  - 📝 connection.js ➔ _script de conexão do bot com a biblioteca Baileys_
-  - 📝 index.js ➔ _script ponto de entrada do bot_
-  - 📝 loader.js ➔ _script de carga de funções_
-  - 📝 menu.js ➔ _menu do bot_
-  - 📝 messages.js ➔ _arquivos de mensagens de boas vindas e saída_
-  - 📝 test.js ➔ _script de testes_
+   - 📁 @types ➔ _pasta onde fica as definições de tipos_
+   - 📁 commands ➔ _pasta onde ficam os comandos_
+       - 📁 admin ➔ _pasta onde ficam os comandos administrativos_
+       - 📁 member ➔ _pasta onde ficam os comandos gerais (todos poderão utilizar)_
+          - 📁 exemplos ➔ _pasta de exemplos apenas para exploração e reaproveitamento em comandos próprios_
+          - 📁 funny ➔ _pasta dos comandos de gifs_
+          - 📁 search ➔ _pasta onde há o comando de pesquisa de cep_
+       - 📁 owner ➔ _pasta onde ficam os comandos de dono (grupo e bot)_
+       - 📝🤖-como-criar-comandos.js ➔ _arquivo de exemplo de como criar um comando_
+   - 📁 errors ➔ _classes de erros usadas nos comandos_
+   - 📁 middlewares ➔ _interceptadores de requisições_
+   - 📁 services ➔ _serviços diversos_
+   - 📁 test ➔ _testes_
+       - 📁 helpers ➔ _erros de restrições em grupos_
+   - 📁 utils ➔ _utilitários_
+   - 📝 config.js ➔ _arquivo de configurações do bot_
+   - 📝 connection.js ➔ _script de conexão do bot com a biblioteca Baileys_
+   - 📝 index.js ➔ _script ponto de entrada do bot_
+   - 📝 loader.js ➔ _script de carga de funções_
+   - 📝 menu-admin.js ➔ _configuração do menu de administração_
+   - 📝 menu-ajuda.js ➔ _configuração do menu de ajuda_
+   - 📝 menu-audios.js ➔ _configuração do menu de audios_
+   - 📝 menu-brincadeiras.js ➔ _configuração do menu de brincadeiras_
+   - 📝 menu-busca.js ➔ _configuração do menu de busca_
+   - 📝 menu-configurações.js ➔ _configuração do menu de configurações_
+   - 📝 menu-downloads.js ➔ _configuração do menu de downloads_
+   - 📝 menu.js ➔ _menu do bot_
+   - 📝 messages.js ➔ _arquivos de mensagens de boas vindas e saída_
 - 📝 .gitignore ➔ _arquivo para não subir certas pastas no GitHub_
-- 📝 ⚡-cases-estao-aqui.js ➔ _easter egg_
-- 📝 AGENTS.md ➔ _arquivo de instruções para IA's_
-- 📝 CLAUDE.md ➔ _arquivo de instruções para a IA Claude_
-- 📝 GEMINI.md ➔ _arquivo de instruções para a IA Gemini_
-- 📝 CONTRIBUTING.md ➔ _guia de contribuição_
-- 📝 LICENSE ➔ _arquivo de licença_
+- 📝 README.md ➔ _esta documentação_
 - 📝 package-lock.json ➔ _arquivo de cache das dependências do bot_
 - 📝 package.json ➔ _arquivo de definição das dependências do bot_
-- 📝 README.md ➔ _esta documentação_
 - 📝 reset-qr-auth.sh ➔ _arquivo para excluir as credenciais do bot_
 - 📝 update.sh ➔ _arquivo de atualização do bot_
+- 📝 yt-dlp.exe ➔ _app que faz os comandos do PLAY e YT-VIDEO funcionar_
+- 📝 ⚡-cases-estao-aqui.js ➔ _easter egg_
 
 ## Atualizar o bot
 
@@ -442,23 +469,6 @@ Em seguida, conecte o número novamente no WhatsApp em "dispositivos conectados"
 ![erro comum 2](./assets/images/erro-comum-2.png)
 
 Abra o termux, digite `termux-setup-storage` e depois, aceite as permissões
-
-### ⚙️ Você configura o token da Spider API, prefixo, etc e o bot não reconhece
-
-Verifique se você não tem dois Takeshi's rodando no seu celular, muitas pessoas baixam o zip e seguem o tutorial, porém, **o tutorial não explica pelo zip, e sim, pelo git clone**.
-
-Geralmente as pessoas que cometem esse erro, ficam com dois bots:
-
-1. O primeiro dentro da `/sdcard`
-2. O segundo na pasta `/storage/emulated/0/Download`, que no zip fica como `takeshi-bot-main`
-
-Você deve apagar um dos bots e tanto configurar quanto executar **apenas um**
-
-O que você não pode fazer:
-
-- Não pode transformar este código em algo proprietário (fechado) e impedir outras pessoas de acessá-lo ou usá-lo.
-
-Esta licença garante que todos tenham acesso ao código-fonte e podem colaborar livremente, promovendo o compartilhamento e o aprimoramento do projeto.
 
 ## Finalização
 Esse código pertence de primeira mão ao repo: https://github.com/guiireal/takeshi-bot 
