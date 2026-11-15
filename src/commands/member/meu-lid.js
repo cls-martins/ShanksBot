@@ -1,3 +1,7 @@
+/*
+Comando para fazer o bot falar o LID de identificação da pessoa
+*/
+
 import { PREFIX } from "../../config.js";
 import InvalidParameterError from "../../errors/InvalidParameterError.js";
 
