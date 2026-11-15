@@ -1,3 +1,7 @@
+/*
+Comando para transformar figurinha estatica em foto novamente
+*/
+
 import { PREFIX } from "../../config.js";
 import { InvalidParameterError } from "../../errors/index.js";
 import { Ffmpeg } from "../../services/ffmpeg.js";
