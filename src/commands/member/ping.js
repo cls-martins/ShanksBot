@@ -1,8 +1,8 @@
-/**
- * Melhorado por: Mkg
- *
- * @author Dev Gui
- */
+/*
+Comando para fazer o Bot falar a quantidade de tempo online
+e verificar quanto tempo demora a responder.
+*/
+
 import { PREFIX } from "../../config.js";
 
 export default {
