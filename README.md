@@ -280,7 +280,54 @@ No WhatsApp, vá em `dispositivos conectados`, clique em `conectar dispositivo` 
 
 12 - Aguarde a conexão e digite `CTRL + C` no PowerShell para parar o bot.
 
-Depois, configure o arquivo `config.js` que está dentro da pasta `src`.
+Depois configure os seguintes arquivos:
+Arquivo `config.js` que está dentro da pasta `src`.
+
+```js
+// Prefixo padrão dos comandos.
+export const PREFIX = "!";
+
+// Emoji do bot (mude se preferir).
+export const BOT_EMOJI = "⚜️";
+
+// Nome do bot (mude se preferir).
+export const BOT_NAME = "ShanksBot ";
+
+// LID do bot (no caso, o que você rodará o bot).
+// Para obter o LID do bot, use o comando <prefixo>lid respondendo em cima de uma mensagem do número do bot
+// Troque o <prefixo> pelo prefixo do bot (ex: /lid).
+export const BOT_LID = "12345678901234567890@lid";
+
+// LID do dono do bot (no caso, o seu!).
+// Para obter o LID do dono do bot, use o comando <prefixo>meu-lid
+// Troque o <prefixo> pelo prefixo do bot (ex: /meu-lid).
+export const OWNER_LID = "12345678901234567890@lid";
+```
+Configure o arquivo `feedback.js` que está dentro da pasta `src\commands\member`.
+
+```js
+/*
+Comando para feedback, reportar e entre outros.
+*/
+
+import { PREFIX } from "../../config.js";
+
+// Números formatados (coloque seu número com e sem o 9º dígito para receber feedback do bot)
+// é aqui onde você deve alterar, coloque o seu número aqui.
+const OWNER_JIDS = [
+  "5588981924454@s.whatsapp.net", // Com 9
+  "558881924454@s.whatsapp.net"   // Sem 9
+];
+
+export default {
+  name: "feedback / reportar / bug",
+  description: "Envia um feedback, report de erro ou sugestão diretamente para o dono do bot",
+  commands: ["feedback", "reportar", "bug", "report", "sugestao"],
+  usage: `${PREFIX}reportar <sua mensagem / descrição do erro>`,
+```
+Você pode apagar os arquivos `biocard`, `cinema` e `newgen` que estão configurados como parceiros
+em `src\commands\member`
+
 
 13 - Inicie o bot novamente.
 
