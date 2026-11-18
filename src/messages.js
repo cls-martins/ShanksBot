@@ -24,15 +24,19 @@ export async function getProfilePicture(socket, jid) {
     // Tenta obter a URL da foto de perfil em alta resolução do WhatsApp
     const profilePicUrl = await socket.profilePictureUrl(jid, "image");
     
-    // Se encontrou a URL, retorna o objeto estruturado para o Baileys
-    return profilePicUrl ? { url: profilePicUrl } : (fs.existsSync(DEFAULT_USER_IMAGE) ? DEFAULT_USER_IMAGE : null);
-  } catch (error) {
-    // Se o usuário não tiver foto (erro do Baileys) ou falhar, usa o arquivo local do bot
-    if (fs.existsSync(DEFAULT_USER_IMAGE)) {
-      return DEFAULT_USER_IMAGE;
+    // Se encontrou a URL, retorna o objeto para o Baileys; senão, usa a padrão local
+    if (profilePicUrl) {
+      return { url: profilePicUrl };
     }
-    return null;
+  } catch (error) {
+    // Silencia o erro de usuário sem foto e prossegue para a imagem padrão
   }
+
+  // Fallback caso não tenha foto ou dê erro: retorna a imagem local
+  if (fs.existsSync(DEFAULT_USER_IMAGE)) {
+    return DEFAULT_USER_IMAGE;
+  }
+  return null;
 }
 
 /**
