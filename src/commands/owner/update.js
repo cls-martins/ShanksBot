@@ -6,242 +6,344 @@
  * Não sobrescreve alterações locais nem commits próprios.
  */
 
+
+import path from "node:path";
+import fs from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+
 import { OWNER_LID, PREFIX } from "../../config.js";
 import { WarningError } from "../../errors/index.js";
 
-const execFileAsync = promisify(execFile);
+const exec = promisify(execFile);
 
-async function run(command, args, cwd, timeout = 120000) {
-  const { stdout = "", stderr = "" } = await execFileAsync(
-    command,
-    args,
-    {
-      cwd,
-      timeout,
-      maxBuffer: 1024 * 1024,
-      windowsHide: true,
-    },
+const git = async (args, cwd) => {
+  const { stdout } = await exec("git", args, {
+    cwd,
+    encoding: "utf8",
+    maxBuffer: 50 * 1024 * 1024,
+    windowsHide: true,
+  });
+
+  return stdout;
+};
+
+const getRoot = async () =>
+  (await git(["rev-parse", "--show-toplevel"], process.cwd())).trim();
+
+const getTree = async (root, ref) => {
+  const output = await git(
+    ["ls-tree", "-r", "-z", ref],
+    root
   );
 
-  return {
-    stdout: stdout.trim(),
-    stderr: stderr.trim(),
-  };
-}
+  const files = new Map();
 
-async function installDependencies(cwd) {
-  if (process.platform === "win32") {
-    return run(
-      "cmd.exe",
-      ["/d", "/s", "/c", "npm install --no-audit --no-fund"],
-      cwd,
-      300000,
-    );
+  for (const entry of output.split("\0").filter(Boolean)) {
+    const tab = entry.indexOf("\t");
+    if (tab < 0) continue;
+
+    const [mode, type, hash] = entry
+      .slice(0, tab)
+      .split(" ");
+
+    const file = entry.slice(tab + 1);
+
+    if (type === "blob") {
+      files.set(file, { mode, hash });
+    }
   }
 
-  return run(
-    "npm",
-    ["install", "--no-audit", "--no-fund"],
-    cwd,
-    300000,
+  return files;
+};
+
+const getBlob = async (root, hash) => {
+  const { stdout } = await exec(
+    "git",
+    ["cat-file", "blob", hash],
+    {
+      cwd: root,
+      encoding: "buffer",
+      maxBuffer: 50 * 1024 * 1024,
+      windowsHide: true,
+    }
   );
-}
+
+  return stdout;
+};
+
+const safePath = (root, file) => {
+  const target = path.resolve(root, file);
+  const relative = path.relative(root, target);
+
+  if (relative.startsWith("..") || path.isAbsolute(relative)) {
+    throw new Error(`Caminho inválido: ${file}`);
+  }
+
+  return target;
+};
+
+const getChangedFiles = async (root, oldRef, newRef) => {
+  const output = await git(
+    ["diff", "--name-only", "-z", oldRef, newRef],
+    root
+  );
+
+  return output.split("\0").filter(Boolean);
+};
+
+const getProtectedFiles = async (root) => {
+  const output = await git(
+    ["status", "--porcelain=v1", "-z", "--untracked-files=all"],
+    root
+  );
+
+  const protectedFiles = new Set();
+  const entries = output.split("\0").filter(Boolean);
+
+  for (let i = 0; i < entries.length; i++) {
+    const entry = entries[i];
+    const status = entry.slice(0, 2);
+    const file = entry.slice(3);
+
+    protectedFiles.add(file);
+
+    // Renames podem trazer dois caminhos.
+    if (status.includes("R") || status.includes("C")) {
+      if (entries[i + 1]) {
+        protectedFiles.add(entries[++i]);
+      }
+    }
+  }
+
+  return protectedFiles;
+};
+
+const applyUpdate = async (root, oldRef, newRef) => {
+  const oldTree = await getTree(root, oldRef);
+  const newTree = await getTree(root, newRef);
+  const changedFiles = await getChangedFiles(root, oldRef, newRef);
+  const protectedFiles = await getProtectedFiles(root);
+
+  const updated = [];
+  const added = [];
+  const removed = [];
+  const ignored = [];
+
+  let dependenciesChanged = false;
+
+  for (const file of changedFiles) {
+    const target = safePath(root, file);
+
+    if (protectedFiles.has(file)) {
+      ignored.push(file);
+      continue;
+    }
+
+    const oldFile = oldTree.get(file);
+    const newFile = newTree.get(file);
+
+    try {
+      await fs.lstat(target);
+
+      if (!oldFile && !newFile) {
+        ignored.push(file);
+        continue;
+      }
+
+      if (!oldFile && newFile) {
+        ignored.push(file);
+        continue;
+      }
+    } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+    }
+
+    if (newFile) {
+      await fs.mkdir(path.dirname(target), { recursive: true });
+
+      const content = await getBlob(root, newFile.hash);
+
+      if (newFile.mode === "120000") {
+        await fs.rm(target, { force: true });
+        await fs.symlink(content.toString(), target);
+      } else {
+        await fs.writeFile(target, content);
+
+        if (newFile.mode === "100755") {
+          await fs.chmod(target, 0o755);
+        }
+      }
+
+      if (oldFile) {
+        updated.push(file);
+      } else {
+        added.push(file);
+      }
+
+      if (
+        file === "package.json" ||
+        file === "package-lock.json"
+      ) {
+        dependenciesChanged = true;
+      }
+    } else if (oldFile) {
+      await fs.rm(target, { recursive: true, force: true });
+      removed.push(file);
+    }
+  }
+
+  return {
+    updated,
+    added,
+    removed,
+    ignored,
+    dependenciesChanged,
+  };
+};
 
 export default {
   name: "update",
-  description: "Atualiza o ShanksBot pelo WhatsApp",
+  description: "Atualiza o bot preservando arquivos modificados.",
   commands: ["update", "atualizar", "atualizacao"],
   usage: `${PREFIX}update`,
 
-  /**
-   * @param {CommandHandleProps} props
-   */
   handle: async ({
     userLid,
     sendWaitReply,
     sendSuccessReply,
     sendErrorReply,
   }) => {
-    if (!OWNER_LID || userLid !== OWNER_LID) {
-      throw new WarningError(
-        "Somente o dono do bot pode executar esta atualização.",
-      );
-    }
-
-    let codeUpdated = false;
-
     try {
-      await sendWaitReply(
-        "Verificando atualizações do ShanksBot. Aguarde...",
-      );
-
-      const root = await run(
-        "git",
-        ["rev-parse", "--show-toplevel"],
-        process.cwd(),
-      );
-
-      const cwd = root.stdout;
-
-      if (!cwd) {
-        throw new Error("Pasta do repositório não encontrada.");
-      }
-
-      const remote = await run(
-        "git",
-        ["remote", "get-url", "origin"],
-        cwd,
-      );
-
-      if (!remote.stdout) {
-        throw new Error(
-          "Remote origin não configurado. Instale o bot usando git clone.",
+      if (userLid !== OWNER_LID) {
+        throw new WarningError(
+          "Apenas o proprietário do bot pode atualizar."
         );
       }
 
-      const status = await run(
-        "git",
-        ["status", "--porcelain", "--untracked-files=no"],
-        cwd,
-      );
+      await sendWaitReply("Verificando atualizações no GitHub...");
 
-      if (status.stdout) {
-        throw new Error(
-          "Existem alterações locais em arquivos do projeto. Faça backup ou salve essas alterações antes de atualizar. Nenhum arquivo foi sobrescrito.",
-        );
-      }
+      const root = await getRoot();
 
       const branch = (
-        await run("git", ["branch", "--show-current"], cwd)
-      ).stdout;
+        await git(["branch", "--show-current"], root)
+      ).trim();
 
       if (!branch) {
         throw new Error("Não foi possível identificar a branch atual.");
       }
 
-      await run("git", ["fetch", "--prune", "origin"], cwd);
+      await git(["fetch", "--prune", "origin"], root);
 
-      let remoteBranch = `origin/${branch}`;
+      const remote = `origin/${branch}`;
 
-      try {
-        await run(
-          "git",
-          ["rev-parse", "--verify", remoteBranch],
-          cwd,
-        );
-      } catch {
-        let found = false;
+      await git(["rev-parse", "--verify", remote], root);
 
-        for (const candidate of ["origin/main", "origin/master"]) {
-          try {
-            await run(
-              "git",
-              ["rev-parse", "--verify", candidate],
-              cwd,
-            );
+      const localHead = (
+        await git(["rev-parse", "HEAD"], root)
+      ).trim();
 
-            remoteBranch = candidate;
-            found = true;
-            break;
-          } catch {
-            // Tenta a próxima branch.
-          }
-        }
+      const remoteHead = (
+        await git(["rev-parse", remote], root)
+      ).trim();
 
-        if (!found) {
-          throw new Error("Nenhuma branch remota compatível foi encontrada.");
-        }
+      if (localHead === remoteHead) {
+        return sendSuccessReply("O bot já está atualizado.");
       }
 
-      const oldHead = (
-        await run("git", ["rev-parse", "HEAD"], cwd)
-      ).stdout;
-
-      const comparison = (
-        await run(
-          "git",
-          [
-            "rev-list",
-            "--left-right",
-            "--count",
-            `HEAD...${remoteBranch}`,
-          ],
-          cwd,
+      const counts = (
+        await git(
+          ["rev-list", "--left-right", "--count", `HEAD...${remote}`],
+          root
         )
-      ).stdout.split(/\s+/);
+      ).trim().split(/\s+/).map(Number);
 
-      const ahead = Number(comparison[0]);
-      const behind = Number(comparison[1]);
-
-      if (!Number.isFinite(ahead) || !Number.isFinite(behind)) {
-        throw new Error("Falha ao comparar as versões.");
-      }
+      const [ahead, behind] = counts;
 
       if (ahead > 0) {
         throw new Error(
-          "Sua instalação possui commits locais que não existem no GitHub. Atualização cancelada para proteger seu histórico.",
+          "Existem commits locais não enviados ao GitHub. Atualização cancelada."
         );
       }
 
       if (behind === 0) {
-        await sendSuccessReply(
-          "Seu ShanksBot já está atualizado!",
-        );
-        return;
+        return sendSuccessReply("Nenhuma atualização disponível.");
       }
 
-      await run(
-        "git",
-        ["merge", "--ff-only", remoteBranch],
-        cwd,
+      await sendWaitReply(
+        "Aplicando atualizações e preservando arquivos modificados..."
       );
 
-      codeUpdated = true;
+      const report = await applyUpdate(
+        root,
+        localHead,
+        remoteHead
+      );
 
-      const changedFiles = (
-        await run(
-          "git",
-          [
-            "diff",
-            "--name-only",
-            oldHead,
-            "HEAD",
-            "--",
-            "package.json",
-            "package-lock.json",
-          ],
-          cwd,
-        )
-      ).stdout;
+      // Atualiza a referência da branch sem sobrescrever arquivos locais.
+      await git(
+        ["update-ref", `refs/heads/${branch}`, remoteHead, localHead],
+        root
+      );
 
-      if (changedFiles) {
-        await installDependencies(cwd);
+      let dependencyMessage = "Dependências: sem alterações.";
+
+      if (report.dependenciesChanged) {
+        if (
+          report.ignored.includes("package.json") ||
+          report.ignored.includes("package-lock.json")
+        ) {
+          dependencyMessage =
+            "Arquivos de dependências preservados. Verifique a instalação manualmente.";
+        } else {
+          try {
+            const npm = process.platform === "win32"
+              ? "npm.cmd"
+              : "npm";
+
+            await exec(npm, ["install", "--no-audit", "--no-fund"], {
+              cwd: root,
+              windowsHide: true,
+              maxBuffer: 50 * 1024 * 1024,
+            });
+
+            dependencyMessage = "Dependências instaladas com sucesso.";
+          } catch {
+            dependencyMessage =
+              "Não foi possível instalar as dependências automaticamente.";
+          }
+        }
       }
 
-      const newHead = (
-        await run("git", ["rev-parse", "--short", "HEAD"], cwd)
-      ).stdout;
+      const list = (title, files) => {
+        if (!files.length) return "";
 
-      await sendSuccessReply(
-        `ShanksBot atualizado com sucesso!\n\nCommit: ${newHead}\n\n${
-          changedFiles
-            ? "Dependências verificadas e instaladas."
-            : "Não houve alterações nas dependências."
-        }\n\nReinicie o bot pelo terminal para carregar a nova versão.`,
+        return `\n\n${title} (${files.length}):\n` +
+          files.slice(0, 15).map((file) => `• ${file}`).join("\n") +
+          (files.length > 15 ? "\n• E outros arquivos..." : "");
+      };
+
+      const message =
+        `Atualização concluída.\n\n` +
+        `Atualizados: ${report.updated.length}\n` +
+        `Adicionados: ${report.added.length}\n` +
+        `Removidos: ${report.removed.length}\n` +
+        `Ignorados: ${report.ignored.length}\n\n` +
+        dependencyMessage +
+        list("Ignorados", report.ignored) +
+        list("Novos arquivos", report.added);
+
+      await sendSuccessReply(message);
+
+      await sendWaitReply(
+        "Reinicie o bot para carregar as atualizações."
       );
     } catch (error) {
-      const details = String(
-        error?.stderr || error?.message || error,
-      ).slice(0, 1000);
-
       await sendErrorReply(
-        `${codeUpdated
-          ? "O código foi atualizado, mas houve um problema na etapa seguinte."
-          : "Não foi possível atualizar o bot."
-        }\n\nDetalhes: ${details}`,
+        error.message || "Erro ao atualizar o bot."
       );
     }
   },
 };
+
+          
