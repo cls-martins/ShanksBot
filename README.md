@@ -469,13 +469,12 @@ export async function customMiddleware({ type, commonFunctions }) {
 - 📝 package-lock.json ➔ _arquivo de cache das dependências do bot_
 - 📝 package.json ➔ _arquivo de definição das dependências do bot_
 - 📝 reset-qr-auth.sh ➔ _arquivo para excluir as credenciais do bot_
-- 📝 update.sh ➔ _arquivo de atualização do bot_
 - 📝 yt-dlp.exe ➔ _app que faz os comandos do PLAY e YT-VIDEO funcionar_
 - 📝 ⚡-cases-estao-aqui.js ➔ _easter egg_
 
 ## Atualizar o bot
 
-Execute `bash update.sh`
+Configure o src/config.js para você ser o dono do bot. O tutorial está dentro do arquivo e aqui no Readme também. Depois disso crie um grupo e execute `!update` para atualizar o bot
 
 ## Erros comuns
 
