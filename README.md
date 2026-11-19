@@ -26,7 +26,7 @@
 # Importante!
 ## Leia o conteúdo abaixo antes de qualquer coisa.
 
-O código deste repositório está alterado para ser usado como ShanksBot. Utilize o https:github.com/guiireal/takeshi-bot como repositório de instalação de teste e repositório de auxílio, para depois aplicar a instalação através deste. 
+O código deste repositório está alterado para ser usado como ShanksBot. Utilize o https://github.com/guiireal/takeshi-bot como repositório de instalação de teste e repositório de auxílio, para depois aplicar a instalação através deste. 
 ### LEIA O TUTORIAL COMPLETO! ESTÁ COM O CONTEÚDO DIFERENTE DO TAKESHI-BOT
 
 ## Sobre este projeto
