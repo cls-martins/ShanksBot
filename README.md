@@ -476,6 +476,8 @@ export async function customMiddleware({ type, commonFunctions }) {
 
 Configure o src/config.js para você ser o dono do bot. O tutorial está dentro do arquivo e aqui no Readme também. Depois disso crie um grupo e execute `!update` para atualizar o bot
 
+Caso dê erro, peça ao gemini ou ao gpt, Claude qualquer IA para ajudar
+
 ## Erros comuns
 
 ### 📁 Operação negada ao extrair a pasta
