@@ -1,16 +1,17 @@
 /**
- * Lista comandos ocultos dos menus dentro da pasta src (apenas dono).
+ * Lista comandos em pastas de comandos (member, admin, owner, etc.)
+ * que não aparecem nos arquivos de menu dentro de src (apenas dono).
+ * Lê apenas texto para não reexecutar módulos nem quebrar a conexão.
  */
 
 import path from "node:path";
 import fs from "node:fs/promises";
-import { pathToFileURL } from "node:url";
 
 import { OWNER_LID, PREFIX } from "../../config.js";
 import { WarningError } from "../../errors/index.js";
 
 const SRC_DIR = path.resolve(process.cwd(), "src");
-const CODE_EXTENSIONS = new Set([".js", ".mjs"]);
+const CODE_EXTENSIONS = new Set([".js", ".mjs", ".cjs"]);
 
 async function collectFiles(dir) {
   const results = [];
@@ -23,7 +24,10 @@ async function collectFiles(dir) {
   }
 
   for (const entry of entries) {
-    if (entry.name.startsWith(".")) continue;
+    if (entry.name.startsWith(".") || entry.name === "node_modules") {
+      continue;
+    }
+
     const fullPath = path.join(dir, entry.name);
 
     if (entry.isDirectory()) {
@@ -40,97 +44,86 @@ async function collectFiles(dir) {
   return results;
 }
 
-function hasHiddenFlag(obj, rawText = "") {
-  if (obj && typeof obj === "object") {
-    if (
-      obj.hidden === true ||
-      obj.hideInMenu === true ||
-      obj.hiddenInMenu === true ||
-      obj.oculto === true ||
-      obj.menu === false ||
-      obj.showInMenu === false
-    ) {
-      return true;
-    }
-  }
-
-  return /\b(hidden|hideInMenu|hiddenInMenu|oculto)\s*:\s*true\b|\b(menu|showInMenu)\s*:\s*false\b/i.test(
-    rawText
+function isMenuFile(relPathLower) {
+  const base = path.basename(relPathLower);
+  return (
+    base.includes("menu") ||
+    relPathLower.includes("/menu/") ||
+    relPathLower.startsWith("menu/")
   );
 }
 
-function extractCommandsFromText(rawText, fallbackName) {
-  const found = new Set();
+function isCommandFile(relPathLower) {
+  if (isMenuFile(relPathLower)) return false;
+  if (relPathLower.endsWith("cmpt-oculto.js") || relPathLower.endsWith("cmpt-ocultos.js")) {
+    return false;
+  }
+
+  return (
+    relPathLower.includes("commands/") ||
+    /(^|\/)(member|admin|owner|user|group|geral|diversao|jogos|utilidades)(\/|$)/.test(
+      relPathLower
+    )
+  );
+}
+
+function extractCommandNames(rawText, fallbackName) {
+  const names = new Set();
 
   const commandsArrayMatch = rawText.match(/\bcommands\s*:\s*\[([\s\S]*?)\]/i);
   if (commandsArrayMatch) {
     const items = commandsArrayMatch[1].match(/["'`]([^"'`]+)["'`]/g) || [];
     for (const item of items) {
-      found.add(item.slice(1, -1).trim());
+      const clean = item.slice(1, -1).trim().toLowerCase();
+      if (clean) names.add(clean);
     }
   }
 
   const nameMatch = rawText.match(/\bname\s*:\s*["'`]([^"'`]+)["'`]/i);
   if (nameMatch) {
-    found.add(nameMatch[1].trim());
-  } else if (fallbackName) {
-    found.add(fallbackName);
+    const clean = nameMatch[1].trim().toLowerCase();
+    if (clean) names.add(clean);
   }
 
-  return Array.from(found).filter(Boolean);
+  if (!names.size && fallbackName) {
+    names.add(fallbackName.toLowerCase());
+  }
+
+  return Array.from(names);
 }
 
-async function inspectFile(filePath) {
-  const relPath = path.relative(SRC_DIR, filePath).split(path.sep).join("/");
-  const baseName = path.basename(filePath, path.extname(filePath));
-  let rawText = "";
+function collectMenuTokens(menuTexts) {
+  const combined = menuTexts.join("\n").toLowerCase();
+  const tokens = new Set();
 
-  try {
-    rawText = await fs.readFile(filePath, "utf8");
-  } catch {
-    return null;
+  // Captura palavras após prefixos comuns usados em menus (!cmd, /cmd, .cmd, ${PREFIX}cmd)
+  const prefixedMatches = combined.match(/(?:[!/.#$-]|\$\{prefix\})([a-z0-9_-]+)/gi) || [];
+  for (const match of prefixedMatches) {
+    const cleaned = match
+      .replace(/^\$\{prefix\}/i, "")
+      .replace(/^[!/.#$-]+/, "")
+      .trim()
+      .toLowerCase();
+    if (cleaned) tokens.add(cleaned);
   }
 
-  let mod = null;
-  try {
-    const fileUrl = `${pathToFileURL(filePath).href}?t=${Date.now()}`;
-    mod = await import(fileUrl);
-  } catch {
-    // Fallback para leitura estática se a importação isolada falhar
-  }
+  // Também guarda o texto completo em minúsculo para casar nomes soltos em listas de menu
+  return { tokens, combined };
+}
 
-  const cmdObj =
-    mod?.default && typeof mod.default === "object" ? mod.default : null;
-  const hiddenByFlag = hasHiddenFlag(cmdObj, rawText);
-  const hiddenByPath = /(^|\/)(hidden|ocultos?|secret|private|dev|owner)\//i.test(
-    relPath
-  );
+function isCommandInMenus(cmdName, menuData) {
+  if (menuData.tokens.has(cmdName)) return true;
 
-  if (!hiddenByFlag && !hiddenByPath) {
-    return null;
-  }
-
-  let commands = [];
-  if (Array.isArray(cmdObj?.commands) && cmdObj.commands.length > 0) {
-    commands = cmdObj.commands.map((c) => String(c).trim()).filter(Boolean);
-  } else if (cmdObj?.name) {
-    commands = [String(cmdObj.name).trim()];
-  } else {
-    commands = extractCommandsFromText(rawText, baseName);
-  }
-
-  const reason = hiddenByFlag ? "flag oculto" : "pasta/rota oculta";
-
-  return {
-    file: `src/${relPath}`,
-    commands,
-    reason,
-  };
+  // Escapa caracteres especiais para buscar palavra/comando no texto dos menus
+  const escaped = cmdName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const wordRegex = new RegExp(`(^|[^a-z0-9_-])${escaped}([^a-z0-9_-]|$)`, "i");
+  return wordRegex.test(menuData.combined);
 }
 
 export default {
   name: "cmpt-oculto",
-  description: "Lista comandos ocultos dos menus dentro da pasta src (apenas dono).",
+  description:
+    "Mostra comandos de member, admin, owner etc. que não aparecem nos menus dentro de src (apenas dono).",
   commands: ["cmpt-oculto", "cmpt-ocultos"],
   usage: `${PREFIX}cmpt-oculto`,
 
@@ -147,39 +140,73 @@ export default {
         );
       }
 
-      await sendWaitReply("Varrendo `src` em busca de comandos ocultos...");
+      await sendWaitReply("Comparando comandos em `src` com os menus...");
 
-      const files = await collectFiles(SRC_DIR);
-      const hiddenItems = [];
+      const allFiles = await collectFiles(SRC_DIR);
+      const menuContents = [];
+      const commandEntries = [];
 
-      for (const file of files) {
-        const inspected = await inspectFile(file);
-        if (inspected) {
-          hiddenItems.push(inspected);
+      for (const filePath of allFiles) {
+        const relPath = path.relative(SRC_DIR, filePath).split(path.sep).join("/");
+        const relPathLower = relPath.toLowerCase();
+        const baseName = path.basename(filePath, path.extname(filePath));
+
+        let rawText = "";
+        try {
+          rawText = await fs.readFile(filePath, "utf8");
+        } catch {
+          continue;
+        }
+
+        if (isMenuFile(relPathLower)) {
+          menuContents.push(rawText);
+          continue;
+        }
+
+        if (isCommandFile(relPathLower)) {
+          const names = extractCommandNames(rawText, baseName);
+          commandEntries.push({
+            file: `src/${relPath}`,
+            names,
+          });
         }
       }
 
-      if (!hiddenItems.length) {
-        return await sendSuccessReply(
-          "Nenhum comando oculto de menu foi encontrado dentro de `src`."
+      if (!menuContents.length) {
+        return await sendErrorReply(
+          "Não encontrei arquivos de menu dentro de `src` para comparar."
         );
       }
 
-      const lines = hiddenItems.map((item, idx) => {
-        const cmds = item.commands.length
-          ? item.commands.map((c) => `${PREFIX}${c}`).join(", ")
-          : "(sem nome/comando identificado)";
-        return `${idx + 1}. *${cmds}*\n   ↳ Arquivo: \`${item.file}\` (${item.reason})`;
+      const menuData = collectMenuTokens(menuContents);
+      const hiddenCommands = [];
+
+      for (const entry of commandEntries) {
+        const visible = entry.names.some((name) => isCommandInMenus(name, menuData));
+        if (!visible) {
+          hiddenCommands.push(entry);
+        }
+      }
+
+      if (!hiddenCommands.length) {
+        return await sendSuccessReply(
+          "Todos os comandos encontrados estão presentes nos menus de `src`!"
+        );
+      }
+
+      const lines = hiddenCommands.map((item, idx) => {
+        const formattedCmds = item.names.map((n) => `${PREFIX}${n}`).join(", ");
+        return `${idx + 1}. *${formattedCmds}*\n   ↳ \`${item.file}\``;
       });
 
       const response =
-        `👻 *COMANDOS OCULTOS DOS MENUS (${hiddenItems.length})*\n\n` +
+        `👻 *COMANDOS FORA DOS MENUS (${hiddenCommands.length})*\n\n` +
         lines.join("\n\n");
 
       await sendSuccessReply(response);
     } catch (error) {
       await sendErrorReply(
-        error.message || "Erro ao verificar comandos ocultos em `src`."
+        error.message || "Erro ao listar comandos ocultos dos menus."
       );
     }
   },
