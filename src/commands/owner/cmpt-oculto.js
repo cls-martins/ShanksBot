@@ -1,90 +1,49 @@
 /**
- * Lista comandos em src/member, src/admin e src/owner que têm
- * "cmpt-oculto" ou "cmpt-ocultos" citado no início do arquivo (apenas dono).
+ * Gerencia e exibe uma lista personalizada de comandos ocultos (apenas dono).
+ * Salva os dados em JSON para não perder ao reiniciar o bot.
  */
 
 import path from "node:path";
 import fs from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 
 import { OWNER_LID, PREFIX } from "../../config.js";
 import { WarningError } from "../../errors/index.js";
 
-const SRC_DIR = path.resolve(process.cwd(), "src");
-const TARGET_DIRS = ["member", "admin", "owner"];
-const CODE_EXTENSIONS = new Set([".js", ".mjs", ".cjs"]);
-const TOP_CHARS_LIMIT = 1500; // trechos iniciais do arquivo
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-async function collectFiles(dir) {
-  const results = [];
-  let entries = [];
+// Salva em database/cmpt-oculto.json (na raiz do projeto)
+const DATA_FILE = path.resolve(__dirname, "../../../database/cmpt-oculto.json");
 
+async function loadData() {
   try {
-    entries = await fs.readdir(dir, { withFileTypes: true });
+    const raw = await fs.readFile(DATA_FILE, "utf8");
+    const parsed = JSON.parse(raw);
+    return {
+      items: Array.isArray(parsed.items) ? parsed.items : [],
+      customText: typeof parsed.customText === "string" ? parsed.customText : "",
+    };
   } catch {
-    return results;
+    return { items: [], customText: "" };
   }
-
-  for (const entry of entries) {
-    if (entry.name.startsWith(".") || entry.name === "node_modules") {
-      continue;
-    }
-
-    const fullPath = path.join(dir, entry.name);
-
-    if (entry.isDirectory()) {
-      const nested = await collectFiles(fullPath);
-      results.push(...nested);
-    } else if (
-      entry.isFile() &&
-      CODE_EXTENSIONS.has(path.extname(entry.name).toLowerCase())
-    ) {
-      results.push(fullPath);
-    }
-  }
-
-  return results;
 }
 
-function hasTopHiddenMarker(rawText) {
-  const head = rawText.slice(0, TOP_CHARS_LIMIT);
-  return /\bcmpt-ocultos?\b/i.test(head);
-}
-
-function extractCommandNames(rawText, fallbackName) {
-  const names = new Set();
-
-  const commandsArrayMatch = rawText.match(/\bcommands\s*:\s*\[([\s\S]*?)\]/i);
-  if (commandsArrayMatch) {
-    const items = commandsArrayMatch[1].match(/["'`]([^"'`]+)["'`]/g) || [];
-    for (const item of items) {
-      const clean = item.slice(1, -1).trim();
-      if (clean) names.add(clean);
-    }
-  }
-
-  const nameMatch = rawText.match(/\bname\s*:\s*["'`]([^"'`]+)["'`]/i);
-  if (nameMatch) {
-    const clean = nameMatch[1].trim();
-    if (clean) names.add(clean);
-  }
-
-  if (!names.size && fallbackName) {
-    names.add(fallbackName);
-  }
-
-  return Array.from(names);
+async function saveData(data) {
+  await fs.mkdir(path.dirname(DATA_FILE), { recursive: true });
+  await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf8");
 }
 
 export default {
   name: "cmpt-oculto",
-  description:
-    "Lista comandos de src/member, src/admin e src/owner marcados com cmpt-oculto/cmpt-ocultos no início (apenas dono).",
+  description: "Exibe e permite editar a lista de comandos ocultos (apenas dono).",
   commands: ["cmpt-oculto", "cmpt-ocultos"],
-  usage: `${PREFIX}cmpt-oculto`,
+  usage: `${PREFIX}cmpt-oculto [add|del|set|limpar]`,
 
   handle: async ({
+    args,
+    fullArgs,
     userLid,
-    sendWaitReply,
     sendSuccessReply,
     sendErrorReply,
   }) => {
@@ -95,58 +54,103 @@ export default {
         );
       }
 
-      await sendWaitReply(
-        "Buscando comandos ocultos em `src/member`, `src/admin` e `src/owner`..."
-      );
+      const sub = (args[0] || "").toLowerCase();
+      const data = await loadData();
 
-      const hiddenCommands = [];
+      // Pega o texto que vem depois do subcomando (mantendo quebras de linha)
+      const rawContent =
+        typeof fullArgs === "string"
+          ? fullArgs.replace(/^\S+\s*/, "").trim()
+          : args.slice(1).join(" ").trim();
 
-      for (const folder of TARGET_DIRS) {
-        const baseDir = path.join(SRC_DIR, folder);
-        const files = await collectFiles(baseDir);
-
-        for (const filePath of files) {
-          const relPath = path.relative(SRC_DIR, filePath).split(path.sep).join("/");
-          const baseName = path.basename(filePath, path.extname(filePath));
-
-          let rawText = "";
-          try {
-            rawText = await fs.readFile(filePath, "utf8");
-          } catch {
-            continue;
-          }
-
-          if (!hasTopHiddenMarker(rawText)) {
-            continue;
-          }
-
-          hiddenCommands.push({
-            category: folder,
-            file: `src/${relPath}`,
-            names: extractCommandNames(rawText, baseName),
-          });
+      // 1. Adicionar item na lista numerada
+      if (sub === "add" || sub === "adicionar") {
+        if (!rawContent) {
+          return await sendErrorReply(
+            `Escreva o que quer adicionar.\nExemplo: \`${PREFIX}cmpt-oculto add !buckshot - Jogo da roleta\``
+          );
         }
-      }
 
-      if (!hiddenCommands.length) {
+        // Se estava usando texto livre antes, limpa para voltar ao modo lista
+        data.customText = "";
+        data.items.push(rawContent);
+        await saveData(data);
+
         return await sendSuccessReply(
-          "Nenhum comando com `cmpt-oculto` ou `cmpt-ocultos` no início foi encontrado em `member`, `admin` ou `owner`."
+          `✅ Adicionado na posição *#${data.items.length}*:\n${rawContent}`
         );
       }
 
-      const lines = hiddenCommands.map((item, idx) => {
-        const cmds = item.names.map((n) => `${PREFIX}${n}`).join(", ");
-        return `${idx + 1}. *${cmds}* [${item.category}]\n   ↳ \`${item.file}\``;
-      });
+      // 2. Remover item pelo número
+      if (sub === "del" || sub === "remover" || sub === "rm") {
+        const index = Number(args[1]) - 1;
+        if (!Number.isInteger(index) || index < 0 || index >= data.items.length) {
+          return await sendErrorReply(
+            `Número inválido. Use \`${PREFIX}cmpt-oculto\` para ver os números da lista.`
+          );
+        }
 
-      const response =
-        `👻 *COMANDOS OCULTOS DOS MENUS (${hiddenCommands.length})*\n\n` +
-        lines.join("\n\n");
+        const [removed] = data.items.splice(index, 1);
+        await saveData(data);
 
-      await sendSuccessReply(response);
+        return await sendSuccessReply(`🗑️ Removido da lista:\n${removed}`);
+      }
+
+      // 3. Substituir a lista inteira por um texto livre escrito por você
+      if (sub === "set" || sub === "editar" || sub === "definir") {
+        if (!rawContent) {
+          return await sendErrorReply(
+            `Mande o texto completo após \`set\`.\nExemplo:\n\`${PREFIX}cmpt-oculto set\`\n!cmd1 - descrição\n!cmd2 - descrição`
+          );
+        }
+
+        data.items = [];
+        data.customText = rawContent;
+        await saveData(data);
+
+        return await sendSuccessReply("✅ Lista de comandos ocultos atualizada!");
+      }
+
+      // 4. Limpar tudo
+      if (sub === "limpar" || sub === "clear") {
+        data.items = [];
+        data.customText = "";
+        await saveData(data);
+
+        return await sendSuccessReply("🧹 Lista de comandos ocultos zerada.");
+      }
+
+      // 5. Exibir a lista atual (quando digita só !cmpt-oculto)
+      const helpFooter =
+        `\n\n━━━━━━━━━━━━━━━━━━\n` +
+        `*Como editar:*\n` +
+        `• \`${PREFIX}cmpt-oculto add <texto>\`\n` +
+        `• \`${PREFIX}cmpt-oculto del <número>\`\n` +
+        `• \`${PREFIX}cmpt-oculto set <lista completa>\`\n` +
+        `• \`${PREFIX}cmpt-oculto limpar\``;
+
+      if (data.customText) {
+        return await sendSuccessReply(
+          `👻 *COMANDOS OCULTOS*\n\n${data.customText}${helpFooter}`
+        );
+      }
+
+      if (!data.items.length) {
+        return await sendSuccessReply(
+          `👻 *COMANDOS OCULTOS*\n\n_(Lista vazia no momento)_${helpFooter}`
+        );
+      }
+
+      const formattedList = data.items
+        .map((item, i) => `${i + 1}. ${item}`)
+        .join("\n");
+
+      return await sendSuccessReply(
+        `👻 *COMANDOS OCULTOS (${data.items.length})*\n\n${formattedList}${helpFooter}`
+      );
     } catch (error) {
       await sendErrorReply(
-        error.message || "Erro ao listar comandos ocultos."
+        error.message || "Erro ao gerenciar a lista de comandos ocultos."
       );
     }
   },
