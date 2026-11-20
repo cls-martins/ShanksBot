@@ -47,6 +47,7 @@ export function menuMessage(groupJid) {
 ┃
 ┠ ${prefix}dado
 ┠ ${prefix}ppt
+┠ ${prefix}buckshot
 ┃
 ┗═══─「⚜️」─═══
 
