@@ -9,7 +9,7 @@ import { deactivateGroup } from "../../utils/database.js";
 export default {
   name: "off",
   description: "Desativa o bot no grupo",
-  commands: ["off", "bangp"],
+  commands: ["off"],
   usage: `${PREFIX}off`,
   /**
    * @param {CommandHandleProps} props
