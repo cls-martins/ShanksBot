@@ -123,7 +123,7 @@ function buildHelpMessage() {
     `- \`${PREFIX}buckshot iniciar\` - Começa a partida\n` +
     `- \`${PREFIX}buckshot self\` - Atira em si mesmo\n` +
     `- \`${PREFIX}buckshot @fulano\` - Atira em um rival\n` +
-    `- \`${PREFIX}buckshot usar [item] [@fulano]\` (ou \`${PREFIX}buckshot [item] [@fulano]\`) - Usa um poder\n` +
+    `- \`${PREFIX}buckshot usar [item]\` - Usa um poder\n` +
     `- \`${PREFIX}buckshot fechar\` - Encerra e limpa qualquer sala/partida aberta`
   );
 }
