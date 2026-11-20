@@ -17,25 +17,25 @@ const DEFAULT_USER_IMAGE = path.resolve("assets", "images", "default-user.png");
  */
 export async function getProfilePicture(socket, jid) {
   try {
-    if (!jid) {
-      return fs.existsSync(DEFAULT_USER_IMAGE) ? DEFAULT_USER_IMAGE : null;
-    }
-    
-    // Tenta obter a URL da foto de perfil em alta resolução do WhatsApp
-    const profilePicUrl = await socket.profilePictureUrl(jid, "image");
-    
-    // Se encontrou a URL, retorna o objeto para o Baileys; senão, usa a padrão local
-    if (profilePicUrl) {
-      return { url: profilePicUrl };
+    if (jid) {
+      const cleanJid = jid.includes(":")
+        ? `${jid.split(":")[0]}@${jid.split("@")[1]}`
+        : jid;
+
+      const profilePicUrl = await socket.profilePictureUrl(cleanJid, "image");
+
+      if (profilePicUrl) {
+        return { url: profilePicUrl };
+      }
     }
   } catch (error) {
-    // Silencia o erro de usuário sem foto e prossegue para a imagem padrão
+    // Usuário sem foto ou foto privada; segue para a imagem padrão
   }
 
-  // Fallback caso não tenha foto ou dê erro: retorna a imagem local
   if (fs.existsSync(DEFAULT_USER_IMAGE)) {
-    return DEFAULT_USER_IMAGE;
+    return fs.readFileSync(DEFAULT_USER_IMAGE);
   }
+
   return null;
 }
 
@@ -66,8 +66,10 @@ export async function getExitMessage(socket, memberJid) {
 }
 
 // Mantidos por compatibilidade
-export const welcomeMessage = "Seja bem vindo ao nosso grupo, @member! Acesse os comandos do bot em\n\n\n`!menu`";
-export const exitMessage = "Poxa, @member saiu do grupo... Sentiremos sua falta!";
+export const welcomeMessage =
+  "Seja bem vindo ao nosso grupo, @member! Acesse os comandos do bot em\n\n`!menu`";
+export const exitMessage =
+  "Poxa, @member saiu do grupo... Sentiremos sua falta!";
 
 export function clearChat() {
   return `🗑️${"\n".repeat(1891)}🗑️`;
