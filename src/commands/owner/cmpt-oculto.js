@@ -1,7 +1,6 @@
 /**
- * Lista comandos em pastas de comandos (member, admin, owner, etc.)
- * que não aparecem nos arquivos de menu dentro de src (apenas dono).
- * Lê apenas texto para não reexecutar módulos nem quebrar a conexão.
+ * Lista comandos em src/member, src/admin e src/owner que têm
+ * "cmpt-oculto" ou "cmpt-ocultos" citado no início do arquivo (apenas dono).
  */
 
 import path from "node:path";
@@ -11,7 +10,9 @@ import { OWNER_LID, PREFIX } from "../../config.js";
 import { WarningError } from "../../errors/index.js";
 
 const SRC_DIR = path.resolve(process.cwd(), "src");
+const TARGET_DIRS = ["member", "admin", "owner"];
 const CODE_EXTENSIONS = new Set([".js", ".mjs", ".cjs"]);
+const TOP_CHARS_LIMIT = 1500; // trechos iniciais do arquivo
 
 async function collectFiles(dir) {
   const results = [];
@@ -44,27 +45,9 @@ async function collectFiles(dir) {
   return results;
 }
 
-function isMenuFile(relPathLower) {
-  const base = path.basename(relPathLower);
-  return (
-    base.includes("menu") ||
-    relPathLower.includes("/menu/") ||
-    relPathLower.startsWith("menu/")
-  );
-}
-
-function isCommandFile(relPathLower) {
-  if (isMenuFile(relPathLower)) return false;
-  if (relPathLower.endsWith("cmpt-oculto.js") || relPathLower.endsWith("cmpt-ocultos.js")) {
-    return false;
-  }
-
-  return (
-    relPathLower.includes("commands/") ||
-    /(^|\/)(member|admin|owner|user|group|geral|diversao|jogos|utilidades)(\/|$)/.test(
-      relPathLower
-    )
-  );
+function hasTopHiddenMarker(rawText) {
+  const head = rawText.slice(0, TOP_CHARS_LIMIT);
+  return /\bcmpt-ocultos?\b/i.test(head);
 }
 
 function extractCommandNames(rawText, fallbackName) {
@@ -74,56 +57,28 @@ function extractCommandNames(rawText, fallbackName) {
   if (commandsArrayMatch) {
     const items = commandsArrayMatch[1].match(/["'`]([^"'`]+)["'`]/g) || [];
     for (const item of items) {
-      const clean = item.slice(1, -1).trim().toLowerCase();
+      const clean = item.slice(1, -1).trim();
       if (clean) names.add(clean);
     }
   }
 
   const nameMatch = rawText.match(/\bname\s*:\s*["'`]([^"'`]+)["'`]/i);
   if (nameMatch) {
-    const clean = nameMatch[1].trim().toLowerCase();
+    const clean = nameMatch[1].trim();
     if (clean) names.add(clean);
   }
 
   if (!names.size && fallbackName) {
-    names.add(fallbackName.toLowerCase());
+    names.add(fallbackName);
   }
 
   return Array.from(names);
 }
 
-function collectMenuTokens(menuTexts) {
-  const combined = menuTexts.join("\n").toLowerCase();
-  const tokens = new Set();
-
-  // Captura palavras após prefixos comuns usados em menus (!cmd, /cmd, .cmd, ${PREFIX}cmd)
-  const prefixedMatches = combined.match(/(?:[!/.#$-]|\$\{prefix\})([a-z0-9_-]+)/gi) || [];
-  for (const match of prefixedMatches) {
-    const cleaned = match
-      .replace(/^\$\{prefix\}/i, "")
-      .replace(/^[!/.#$-]+/, "")
-      .trim()
-      .toLowerCase();
-    if (cleaned) tokens.add(cleaned);
-  }
-
-  // Também guarda o texto completo em minúsculo para casar nomes soltos em listas de menu
-  return { tokens, combined };
-}
-
-function isCommandInMenus(cmdName, menuData) {
-  if (menuData.tokens.has(cmdName)) return true;
-
-  // Escapa caracteres especiais para buscar palavra/comando no texto dos menus
-  const escaped = cmdName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const wordRegex = new RegExp(`(^|[^a-z0-9_-])${escaped}([^a-z0-9_-]|$)`, "i");
-  return wordRegex.test(menuData.combined);
-}
-
 export default {
   name: "cmpt-oculto",
   description:
-    "Mostra comandos de member, admin, owner etc. que não aparecem nos menus dentro de src (apenas dono).",
+    "Lista comandos de src/member, src/admin e src/owner marcados com cmpt-oculto/cmpt-ocultos no início (apenas dono).",
   commands: ["cmpt-oculto", "cmpt-ocultos"],
   usage: `${PREFIX}cmpt-oculto`,
 
@@ -140,73 +95,58 @@ export default {
         );
       }
 
-      await sendWaitReply("Comparando comandos em `src` com os menus...");
+      await sendWaitReply(
+        "Buscando comandos ocultos em `src/member`, `src/admin` e `src/owner`..."
+      );
 
-      const allFiles = await collectFiles(SRC_DIR);
-      const menuContents = [];
-      const commandEntries = [];
-
-      for (const filePath of allFiles) {
-        const relPath = path.relative(SRC_DIR, filePath).split(path.sep).join("/");
-        const relPathLower = relPath.toLowerCase();
-        const baseName = path.basename(filePath, path.extname(filePath));
-
-        let rawText = "";
-        try {
-          rawText = await fs.readFile(filePath, "utf8");
-        } catch {
-          continue;
-        }
-
-        if (isMenuFile(relPathLower)) {
-          menuContents.push(rawText);
-          continue;
-        }
-
-        if (isCommandFile(relPathLower)) {
-          const names = extractCommandNames(rawText, baseName);
-          commandEntries.push({
-            file: `src/${relPath}`,
-            names,
-          });
-        }
-      }
-
-      if (!menuContents.length) {
-        return await sendErrorReply(
-          "Não encontrei arquivos de menu dentro de `src` para comparar."
-        );
-      }
-
-      const menuData = collectMenuTokens(menuContents);
       const hiddenCommands = [];
 
-      for (const entry of commandEntries) {
-        const visible = entry.names.some((name) => isCommandInMenus(name, menuData));
-        if (!visible) {
-          hiddenCommands.push(entry);
+      for (const folder of TARGET_DIRS) {
+        const baseDir = path.join(SRC_DIR, folder);
+        const files = await collectFiles(baseDir);
+
+        for (const filePath of files) {
+          const relPath = path.relative(SRC_DIR, filePath).split(path.sep).join("/");
+          const baseName = path.basename(filePath, path.extname(filePath));
+
+          let rawText = "";
+          try {
+            rawText = await fs.readFile(filePath, "utf8");
+          } catch {
+            continue;
+          }
+
+          if (!hasTopHiddenMarker(rawText)) {
+            continue;
+          }
+
+          hiddenCommands.push({
+            category: folder,
+            file: `src/${relPath}`,
+            names: extractCommandNames(rawText, baseName),
+          });
         }
       }
 
       if (!hiddenCommands.length) {
         return await sendSuccessReply(
-          "Todos os comandos encontrados estão presentes nos menus de `src`!"
+          "Nenhum comando com `cmpt-oculto` ou `cmpt-ocultos` no início foi encontrado em `member`, `admin` ou `owner`."
         );
       }
 
       const lines = hiddenCommands.map((item, idx) => {
-        const formattedCmds = item.names.map((n) => `${PREFIX}${n}`).join(", ");
-        return `${idx + 1}. *${formattedCmds}*\n   ↳ \`${item.file}\``;
+        const cmds = item.names.map((n) => `${PREFIX}${n}`).join(", ");
+        return `${idx + 1}. *${cmds}* [${item.category}]\n   ↳ \`${item.file}\``;
       });
 
       const response =
-        `👻 *COMANDOS FORA DOS MENUS (${hiddenCommands.length})*\n\n` +
+        `👻 *COMANDOS OCULTOS DOS MENUS (${hiddenCommands.length})*\n\n` +
         lines.join("\n\n");
 
       await sendSuccessReply(response);
     } catch (error) {
       await sendErrorReply(
-        error.message || "Erro ao listar comandos ocultos dos menus."
+        error.message || "Erro ao listar comandos ocultos."
       );
     }
   },
