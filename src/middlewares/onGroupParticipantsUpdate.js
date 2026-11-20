@@ -1,9 +1,9 @@
 /**
- * Evento chamado quando um usuário
- * entra ou sai de um grupo de WhatsApp.
+- Evento chamado quando um usuário
+- entra ou sai de um grupo de WhatsApp.
  *
  */
-import { exitMessage, welcomeMessage } from "../messages.js";
+import { getExitMessage, getWelcomeMessage } from "../messages.js";
 import {
   isActiveExitGroup,
   isActiveGroup,
@@ -30,40 +30,55 @@ export async function onGroupParticipantsUpdate({
     const userLid = extractUserLid(data);
 
     if (isActiveWelcomeGroup(remoteJid) && action === "add") {
-      const hasMemberMention = welcomeMessage.includes("@member");
+      const { image, caption } = await getWelcomeMessage(socket, userLid);
+      const hasMemberMention = caption.includes("@member");
 
       const mentions = [];
-      let finalWelcomeMessage = welcomeMessage;
+      let finalWelcomeMessage = caption;
 
       if (hasMemberMention) {
         const userNumber = onlyNumbers(userLid);
-        finalWelcomeMessage = welcomeMessage.replace(
-          "@member",
-          `@${userNumber}`,
-        );
+        finalWelcomeMessage = caption.replace("@member", `@${userNumber}`);
         mentions.push(userLid);
       }
 
-      await socket.sendMessage(remoteJid, {
-        text: finalWelcomeMessage,
-        mentions,
-      });
+      if (image) {
+        await socket.sendMessage(remoteJid, {
+          image,
+          caption: finalWelcomeMessage,
+          mentions,
+        });
+      } else {
+        await socket.sendMessage(remoteJid, {
+          text: finalWelcomeMessage,
+          mentions,
+        });
+      }
     } else if (isActiveExitGroup(remoteJid) && action === "remove") {
-      const hasMemberMention = exitMessage.includes("@member");
+      const { image, caption } = await getExitMessage(socket, userLid);
+      const hasMemberMention = caption.includes("@member");
 
       const mentions = [];
-      let finalExitMessage = exitMessage;
+      let finalExitMessage = caption;
 
       if (hasMemberMention) {
         const userNumber = onlyNumbers(userLid);
-        finalExitMessage = exitMessage.replace("@member", `@${userNumber}`);
+        finalExitMessage = caption.replace("@member", `@${userNumber}`);
         mentions.push(userLid);
       }
 
-      await socket.sendMessage(remoteJid, {
-        text: finalExitMessage,
-        mentions,
-      });
+      if (image) {
+        await socket.sendMessage(remoteJid, {
+          image,
+          caption: finalExitMessage,
+          mentions,
+        });
+      } else {
+        await socket.sendMessage(remoteJid, {
+          text: finalExitMessage,
+          mentions,
+        });
+      }
     }
   } catch (error) {
     errorLog(`Erro em onGroupParticipantsUpdate: ${error.message}`);
