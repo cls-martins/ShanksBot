@@ -528,3 +528,6 @@ Abra o termux, digite `termux-setup-storage` e depois, aceite as permissões
 
 ## Finalização
 Esse código pertence de primeira mão ao repo: https://github.com/guiireal/takeshi-bot 
+
+O ShanksBot é o Bot principal de um grupo de shitposting! 
+https://newgen-shitpost.vercel.app 
