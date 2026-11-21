@@ -9,6 +9,8 @@ import io
 
 def get_font(size, bold=False):
     font_paths = [
+        "C:/Windows/Fonts/arialbd.ttf" if bold else "C:/Windows/Fonts/arial.ttf",
+        "C:/Windows/Fonts/segoeuib.ttf" if bold else "C:/Windows/Fonts/segoeui.ttf",
         "/system/fonts/Roboto-Bold.ttf" if bold else "/system/fonts/Roboto-Regular.ttf",
         "/system/fonts/DroidSans-Bold.ttf" if bold else "/system/fonts/DroidSans.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
@@ -124,8 +126,8 @@ def create_ship_card(pfp1_url, pfp2_url, percentage, output_path):
     draw.rounded_rectangle([card_x, card_y, card_x+card_w, card_y+card_h], radius=radius, outline=(244, 114, 182, 180), width=3)
 
     # Título superior
-    font_title = get_font(18, bold=True)
-    draw.text((width // 2, 70), "♥   MATCH PERFEITO   ♥", fill=(252, 165, 165), anchor="mm", font=font_title)
+    font_title = get_font(22, bold=True)
+    draw.text((width // 2, 70), "MATCH PERFEITO", fill=(252, 165, 165), anchor="mm", font=font_title)
 
     # Função para cortar a foto circular maior
     def get_avatar(url):
@@ -161,18 +163,18 @@ def create_ship_card(pfp1_url, pfp2_url, percentage, output_path):
     draw.ellipse([x1 - 3, y_av - 3, x1 + 183, y_av + 183], outline=(236, 72, 153, 255), width=5)
     draw.ellipse([x2 - 3, y_av - 3, x2 + 183, y_av + 183], outline=(236, 72, 153, 255), width=5)
 
-    # Sinal de mais (+) perfeitamente centralizado entre as fotos
+    # Sinal de mais (+) perfeitamente centralizado entre as fotos (borda redonda intocada)
     plus_x = width // 2             # 400 exato (centro da tela)
     plus_y = y_av + (180 // 2)      # 205 (centro vertical exato das fotos)
     
     draw.ellipse([plus_x - 22, plus_y - 22, plus_x + 22, plus_y + 22], fill=(60, 20, 45, 255))
     draw.ellipse([plus_x - 22, plus_y - 22, plus_x + 22, plus_y + 22], outline=(244, 114, 182, 220), width=3)
     
-    font_plus = get_font(32, bold=True)
+    font_plus = get_font(44, bold=True)
     draw.text((plus_x, plus_y), "+", fill=(255, 255, 255), anchor="mm", font=font_plus)
 
-    # 4. Porcentagem gigante centralizada
-    font_pct = get_font(64, bold=True)
+    # 4. Porcentagem grande centralizada
+    font_pct = get_font(92, bold=True)
     draw.text((width // 2, 360), f"{percentage}%", fill=(255, 255, 255), anchor="mm", font=font_pct)
 
     # 5. Barra de progresso moderna com degradê rosa
