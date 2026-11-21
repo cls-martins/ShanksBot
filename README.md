@@ -99,6 +99,9 @@ pkg update && pkg upgrade -y
 pkg install python -y 
 ```
 ```sh
+pkg install python-pillow
+```
+```sh
 npm install jimp --no-bin-links
 ```
 e por ultimo
@@ -253,6 +256,9 @@ npm install
 ```
 ```sh
 winget install Python.Python.3.13
+```
+```sh
+python -m pip install pillow
 ```
 ```sh
 npm install yt search
