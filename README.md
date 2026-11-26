@@ -108,9 +108,9 @@ e por ultimo
 ```sh
 npm install yt-dlp.yt-dlp --no-bin-links
 ```
-ou 
+se não funcionar, tente:
 ```sh
-winget install yt-dlp.yt-dlp --no-bin-links
+pip install yt-dlp --no-bin-links
 ```
 Se você usou uma pasta interna do Termux (fora da `~/storage`), pode instalar normalmente (faça os comandos acima para instalar as dependencias tbm, apenas remova o "--no-bin-links" do final):
 
