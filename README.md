@@ -174,8 +174,8 @@ import { PREFIX } from "../../config.js";
 // Números formatados (coloque seu número com e sem o 9º dígito para receber feedback do bot)
 // é aqui onde você deve alterar, coloque o seu número aqui.
 const OWNER_JIDS = [
-  "5588981924454@s.whatsapp.net", // Com 9
-  "558881924454@s.whatsapp.net"   // Sem 9
+  "5511912345678@s.whatsapp.net", // Com 9
+  "551112345678@s.whatsapp.net"   // Sem 9
 ];
 
 export default {
