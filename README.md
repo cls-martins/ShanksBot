@@ -482,7 +482,7 @@ export async function customMiddleware({ type, commonFunctions }) {
 
 Configure o src/config.js para você ser o dono do bot. O tutorial está dentro do arquivo e aqui no Readme também. Depois disso crie um grupo e execute `!update` para atualizar o bot
 
-Caso dê erro, peça ao gemini ou ao gpt, Claude qualquer IA para ajudar
+Caso dê erro, peça ao gemini, gpt ou Claude.. qualquer IA para ajudar. Algumas coisas são do github.com/guiireal/takeshi-bot e foram desenvolvidas com a ajuda do Claude.
 
 ## Erros comuns
 
