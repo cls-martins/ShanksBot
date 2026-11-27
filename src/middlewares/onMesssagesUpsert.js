@@ -1,6 +1,6 @@
 /**
- * Evento chamado quando uma mensagem
- * é enviada para o grupo do WhatsApp
+- Evento chamado quando uma mensagem
+- é enviada para o grupo do WhatsApp
  *
  */
 import { DEVELOPER_MODE } from "../config.js";
@@ -25,6 +25,7 @@ import { recordMessageEnvelope } from "../utils/messageEnvelopeRegistry.js";
 import { hasPaymentMessage } from "../utils/paymentMessage.js";
 import { handleAfkReferences } from "./afkHandler.js";
 import { onGroupParticipantsUpdate } from "./onGroupParticipantsUpdate.js";
+import { handleAntiPhotoSpam } from "../utils/antiPhotoSpam.js";
 
 export async function onMessagesUpsert({ socket, messages, startProcess }) {
   if (!messages.length) {
@@ -145,6 +146,17 @@ export async function onMessagesUpsert({ socket, messages, startProcess }) {
       const commonFunctions = loadCommonFunctions({ socket, webMessage });
 
       if (!commonFunctions) {
+        continue;
+      }
+
+      const spammed = await handleAntiPhotoSpam({
+        socket,
+        webMessage,
+        remoteJid,
+        userLid: commonFunctions?.userLid || rawParticipant,
+      });
+
+      if (spammed) {
         continue;
       }
 
