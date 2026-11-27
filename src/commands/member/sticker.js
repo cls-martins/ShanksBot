@@ -1,5 +1,6 @@
 /*
-Configurações do comando de sticker.
+Configurações do comando de sticker. 
+O comando pode ser usado respondendo a uma imagem, gif ou vídeo (máximo 10 segundos).
 */
 
 import { PREFIX } from "../../config.js";
