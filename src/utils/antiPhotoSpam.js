@@ -1,3 +1,7 @@
+/*
+Configurações do comando anti-spam-foto
+*/
+
 import crypto from "crypto";
 import fs from "fs";
 import path from "path";
