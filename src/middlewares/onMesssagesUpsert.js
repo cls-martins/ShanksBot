@@ -3,7 +3,7 @@
 - é enviada para o grupo do WhatsApp
  *
  */
-import { DEVELOPER_MODE } from "../config.js";
+import { BOT_LID, DEVELOPER_MODE, OWNER_LID } from "../config.js";
 import { badMacHandler } from "../utils/badMacHandler.js";
 import {
   checkIfMemberIsMuted,
@@ -26,6 +26,44 @@ import { hasPaymentMessage } from "../utils/paymentMessage.js";
 import { handleAfkReferences } from "./afkHandler.js";
 import { onGroupParticipantsUpdate } from "./onGroupParticipantsUpdate.js";
 import { handleAntiPhotoSpam } from "../utils/antiPhotoSpam.js";
+
+function isMentionOrReplyToMe(webMessage, socket) {
+  if (!webMessage?.message || webMessage.key?.fromMe) return false;
+
+  const myIds = [socket?.user?.id, socket?.user?.lid, BOT_LID, OWNER_LID]
+    .filter(Boolean)
+    .map((id) => String(id).split(":")[0].split("@")[0]);
+
+  if (!myIds.length) return false;
+
+  const msg = webMessage.message;
+  const content =
+    msg.extendedTextMessage ||
+    msg.imageMessage ||
+    msg.videoMessage ||
+    msg.audioMessage ||
+    msg.stickerMessage ||
+    msg.documentMessage ||
+    msg.ephemeralMessage?.message?.extendedTextMessage ||
+    msg.viewOnceMessage?.message?.extendedTextMessage ||
+    msg.viewOnceMessageV2?.message?.extendedTextMessage ||
+    null;
+
+  const ctx = content?.contextInfo;
+  if (!ctx) return false;
+
+  const mentioned = (ctx.mentionedJid || []).map(
+    (jid) => String(jid).split(":")[0].split("@")[0],
+  );
+  const isMentioned = mentioned.some((id) => myIds.includes(id));
+
+  const quotedParticipant = String(ctx.participant || "")
+    .split(":")[0]
+    .split("@")[0];
+  const isReplyToMe = Boolean(quotedParticipant) && myIds.includes(quotedParticipant);
+
+  return isMentioned || isReplyToMe;
+}
 
 export async function onMessagesUpsert({ socket, messages, startProcess }) {
   if (!messages.length) {
@@ -60,6 +98,14 @@ export async function onMessagesUpsert({ socket, messages, startProcess }) {
 
       if (isAtLeastMinutesInPast(timestamp)) {
         continue;
+      }
+
+      // Marca como lida apenas mensagens novas que mencionam (@) ou respondem você/o bot
+      if (isMentionOrReplyToMe(webMessage, socket)) {
+        const delayMs = 1500 + Math.floor(Math.random() * 2500);
+        setTimeout(() => {
+          socket.readMessages([webMessage.key]).catch(() => {});
+        }, delayMs);
       }
 
       if (isAddOrLeave.includes(webMessage.messageStubType)) {
